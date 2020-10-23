@@ -1,0 +1,107 @@
+---
+title: "A1-*Usama Naeem Toor*"
+author: "by *Usama Naeem Toor* (*301353233*)"
+date: "*20th Sept 2020*"
+output: html_document
+---
+
+### Assignment 1 Instructions
+
+1. Read [Chapter 1](https://r4ds.had.co.nz/introduction.html) and [Chapter 27](https://r4ds.had.co.nz/r-markdown.html) of [**R for Data Science (R4DS)**](https://r4ds.had.co.nz). 
+
+2. Read [Chapter 1](https://socviz.co/lookatdata.html#lookatdata) and [Chapter 2, sections 2.1 and 2.2](https://socviz.co/gettingstarted.html#gettingstarted) of [**Data Visualization (SOCVIZ)**](https://socviz.co).
+
+3. Download the markdown file "A1-Your Name.Rmd" from Canvas. Change the name of the file so that your full name appears in the name of the file instead of the words "Your Name". Change the title and author information at the top to reflect your information.  **Independently** complete the steps in each section below, then *knit* your R Markdown Notebook into a ``.html`` file. Submit the completed ``.Rmd`` and ``.html`` file on Canvas. Submit the same ``.html`` file to the course Turnitin link. **Assignment 1 is due by 11:59PM on Sunday September 20. Assignments submitted late will lose one point per 10 minutes late. So 1 point will be deducted if submitted between 12:00-12:09 AM; -2 points 12:10-12:19 AM; ...; -9 points 1:20-1:29 (since assignments are out of 10, no credit for anything after 1:30)** 
+
+### Part 1: Integrity Statement and Assignment References
+
+In submitting this assignment to Canvas, I, *Usama Naeem Toor*, confirm that this work was independently completed and that I have appropriately listed all of my sources below. I understand that if it is discovered that any part of my answers (inlcluding the code I use) are determined to be duplicates of the answers from any other student in this course or from prior course materials, then I will receive zero points on this assignment. I also affirm that any answers or code copied or used from other resources online is appropriately referenced and if it is not appropriately referenced that I will receive zero points on this assignment. 
+
+I have used the following materials to complete this assignment: 
+1. [R4DS](https://r4ds.had.co.nz). 
+2. [SOCVIZ](https://socviz.co)
+3. Course lecture videos on Canvas
+4. **List any other websites, datasets, blogs, etc. used to complete your assignment. **
+
+### Part 2 - Data Visualization
+
+Download the ``anscombefig.png`` figure from Canvas and save to your own computer. Modify the file path below to the location of your downloaded figure so that the figure appears in your ``.html`` file when you knit your ``.Rmd``. 
+
+![Figure 1.2 from Chapter 1.1 of SOCVIZ.](/Users/usama/Downloads/anscombefig.png)
+
+1. In your own words (do not copy and paste from the text), explain how this figure above illustrates the importance of visualizing your data. What does visualizing the data reveal about the correlation between voter turnout and income inequality? 
+
+**My Answer **
+
+The figure above allows us to easily interpret and understand Anscombe’s quartet. By looking at the chart, we are able to comprehend the trend and outlook that appears from it, making it easy for us to make judgements. It would be much easier for us to understand the trend from the graph rather than looking over pages and pages of worksheet and written data. And that being said, it allows us to summerize the findings as well. 
+
+Secondly, while the argument is that there is negative correlation between the two variables, we see that only one country follows that trend in an extreme manner. Though we still argue that the number of turnout increases with decreasing income equality, that aspect is true for most countries at a certain point (between 60% to 100%) whilst for South Africe it is true for a certain point (near 20%) way beyond the others. In this case, as has been done already, we could say that South Africa be dropped for a better result for correlation.
+
+
+
+2. Include an example of data visualization from a recent article about COVID-19. Choose an article that is published online and freely available (no paywall). Take a screenshot of the image or save the image and include the image in your ``.html`` output as we did above for the anscombe plot. Beneath the image, in your own words, clearly describe why you think your example is a high quality data visualization in 3 or 4 sentences. What aspects of the visualization appeal to you? What *channels* are effectively used to encode information visually? (See [Section 1.3.2 of SOCVIZ](https://socviz.co/lookatdata.html#lookatdata) for examples of *channels*). Relate the figure to other points about good data visualization made in [Chapter 1 of SOCVIZ](https://socviz.co/lookatdata.html#lookatdata). In your paragraph also include a sentence that describes the source of the figure with a hyperlink (see first few resources listed in Part 1 for an example for how to include a hyperlink in Rmarkdown). **Integrity Reminder**: This should be your own words. Do not copy and paste or paraphrase why someone else thinks your example is a good example of data visualization. There are a lot of COVID-19 articles (and lots of visualizations within those articles), so I do not expect any two students to choose the same graph. 
+
+**Answer**
+
+![COVID-19 amongst some countries](/Users/usama/Downloads/covid19.png)
+
+[Referenced link for Graph](https://www.weforum.org/agenda/2020/03/upward-trajectory-flattening-curve-how-countries-are-faring-coronavirus-covid-19/)
+
+The reason why I believe this a good example of Data Visualization is that it allows us to monitor the trend of test conducted in different countries.Here, Data is not cramped, meaning that not alot of countries are thrown into it, making it easy for us to understand trends. Moreover, each country has a different color to it and the final values are demonstrated as well, both great aspects. This graph does not make a huge effort on display, it is plain and gets to the point. Even a person without any understanding of the situation will easily read the graph, hence for any audience. 
+
+
+This graph appeals to me the most because it is easy to understand, gives alot of empiral information and great to look at, does not seem strenous. The color selection, moreover, and the lack of cramping here makes it easier to understand. From this trend, it is appearling to know as to which country has been more active in its work against COVID-19 and who has not, basing our argument on numbers and not mere words of government. As we can see, while both Germany and France are bordering countries, both have huge differences in efforts against COVID-19. This graph virtually makes it easier for us to even know the exact numbers of tests conducted, protecting us from going over huge chunks of data and then to calculate it.
+
+In this graph, colour is used as effective channel, as all elements are same in other respects. Additionally, in the colour that is used, colour used are ones that are visually different from each other, making it easier to read the graph. 
+
+The first important point about the graph is that it has been made simple and easy to understand, no kind of "extra" effort is not put in it to make it rather more colourful or aesthetic. In its current form, it is easy to read by anyone, even providing fix number values at the end. Secondly, while color is used as the only channel here, which could be argued as an example of bad visualization, we see that the data is limited to a number of countries which suits the length of graph for easy reading. Moreover, the graph clearly represents the relationship of data to us by allowing for each countries to have a single line. By doing this, we know which line represents the country at every single position, hence they can be treated as the same thing or part of the same thing.
+
+
+### Part 3 - R Markdown
+
+1. Carefully read [Section 27.3 of R4DS](https://r4ds.had.co.nz/r-markdown.html#text-formatting-with-markdown) and create a bulleted list describing 3 reasons you registered for this course (no right or wrong answers!). For each item in your list of 3 reasons, create a name summarizing the reason and use a bold font for this name before your sentence describing the reason in more detail. Italicize at least one word you want to emphasize in your description for one of the reasons. Add a horizontal rule (line) after your list. Recreate your list in table format where the first column is titled "Reason" and the second column is titled "Description".
+
+**Answer**
+
+**The three reasons why I took ECON334**
+
+* **Data Science** My motivation for this course was to take a *deeper understanding* of elements related to Data Science, to see whether this field will suit me in the future or not. 
+* **R Software** Since I am an *Statistics Minor* as well, I wanted to learn how R can be used within the realm of economics. 
+* **ECON435** While I am taking ECON435 right now, I believe that learning R will help me in understanding *STATA*.
+
+---------------------------------------------------------------------------------------------------
+
+**Table**
+
+Reasons          |   Description
+--------         |  ------------------------------------------------------------------------------
+**Data Science** |  My motivation for this course was to take a *deeper understanding* of elements related to Data Science, to see whether this field will suit me in the future or not.  
+**R Software**   |  Since I am an *Statistics Minor* as well, I wanted to learn how R can be used within the realm of economics.
+**ECON435**      |   While I am taking ECON435 right now, I believe that learning R will help me in understanding *STATA*.
+
+
+2. One of the most important parts of your Rmarkdown files will be the inclusion of R code "chunks" that run when you knit the ``.Rmd`` file. Carefully read [Sections 27.4.1 and 27.4.2 of R4DS](https://r4ds.had.co.nz/r-markdown.html#code-chunks). For all of the R code chunks in your assignments, name each one with your initials and an illustrative name for whatever you are accomplishing with the code. Below, I have an example chunk that calls a data object ``anscombe`` that is a classic example of the importance of looking at data in visual form ("Anscombe's quartet" from [Section 1.1. of SOCVIZ](https://socviz.co/lookatdata.html#why-look-at-data)). Create your own R code chunk that also calls the ``anscombe`` object but use the ``eval = FALSE`` option and describe what happens when you knit your file. Then use the ``echo = FALSE`` option and describe what happens when you knit your file. 
+
+**My Answer**
+
+*Please note: I deleted the Professors example here*
+
+**Part 1**
+
+```{r UNT code_appears_not_run_nooutput, eval = FALSE}
+anscombe
+```
+
+*Description*: Here, the code is seen on the output file, however, we do not see the code's output graph present because the code is NOT run. Hence, we can see anscombe, but nothing else.
+
+**Part 2**
+
+
+```{r UNT code_not_appears_but_run_output, echo = FALSE}
+anscombe
+```
+
+*Description*: Here, we have the opposite. While we can see the output graph, we do NOT see the code in the output file. Hence, we only see the graph and not the code, like we did previously. 
+
+
+

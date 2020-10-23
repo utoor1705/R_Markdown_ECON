@@ -1,0 +1,218 @@
+---
+title: "A2 - *Usama Naeem Toor*"
+author: "by *Usama Naeem Toor* (*301353233*)"
+date: "*25th September 2020*"
+output: html_document
+---
+
+### Assignment 2 Instructions
+
+1. Read [Chapter 2, sections 2.3 through 2.7 ](https://socviz.co/gettingstarted.html#things-to-know-about-r) of [**Data Visualization (SOCVIZ)**](https://socviz.co).
+
+2. Read [Chapter 3](https://r4ds.had.co.nz/data-visualisation.html) of [**R for Data Science (R4DS)**](https://r4ds.had.co.nz). 
+
+3. Download the markdown file "A2-Your Name.Rmd" from Canvas. Change the name of the file so that your full name appears in the name of the file instead of the words "Your Name". Change the title and author information at the top to reflect your information.  **Independently** complete the steps in each section below, then *knit* your R Markdown Notebook into a ``.html`` file. Submit the completed ``.Rmd`` and ``.html`` file on Canvas. Submit the same ``.html`` file to the course Turnitin link. **Assignment 2 is due by 11:59PM on Sunday September 27. Assignments submitted late will lose one point per 10 minutes late. So 1 point will be deducted if submitted between 12:00-12:09 AM; -2 points 12:10-12:19 AM; ...; -9 points 1:20-1:29 (since assignments are out of 10, no credit for anything after 1:30)** 
+
+### Part 1: Integrity Statement and Assignment References
+
+In submitting this assignment to Canvas, I, *Usama Naeem Toor*, confirm that this work was independently completed and that I have appropriately listed all of my sources below. I understand that if any part of my answers (inlcluding the code I use) are similar enough to indicate non-independent work when compared to the answers from any other student in this course or from prior course materials, then I will receive zero points on this assignment. I also affirm that any answers or code copied or used from other resources online is appropriately referenced and if it is not appropriately referenced than I will receive zero points on this assignment. 
+
+I have used the following materials to complete this assignment: 
+1. [R4DS](https://r4ds.had.co.nz). 
+2. [SOCVIZ](https://socviz.co)
+3. Course lecture videos on Canvas
+4. https://rpubs.com/tuyenhavan/282317
+5. http://environmentalcomputing.net/plotting-with-ggplot-adding-titles-and-axis-names/
+6. https://stackoverflow.com/questions/18046051/setting-individual-axis-limits-with-facet-wrap-and-scales-free-in-ggplot2
+
+NEW: I have used the following R packages to complete this assignment. To replicate, install these packages first. 1. *WDI*, 2. *tidyverse*
+
+
+
+### Part 2 - R Objects and Functions
+
+1. In an R code chunk load the libraries of the packages you list above so that when you knit the file the packages can be used. 
+
+```{r setup}
+library(WDI)
+library(tibble)
+library(ggplot2)
+library(dplyr)
+```
+
+
+2. In a R code chunk below, create a vector of any 11 numbers between 1 and 99 and assign this vector to an R object named "my_numbers_ks" (replace the "ks" in the object name with your own initials).
+
+
+```{r Code_1}
+my_number_unt = c(9, 18, 27, 36, 45, 54, 63, 72, 81, 90, 99)
+```
+
+3. Now just type the name of the object created in the previous question and describe what the output shows when you run the code (or knit the file)
+
+```{r Code_2}
+my_number_unt
+```
+
+**Answer**
+When I type the name of the object, the whole vector appears as if it had been printed. It shows the ouput of the objet "my_name_unt."
+
+4. Calculate the mean of your vector using the `mean()` function. Also calculate the standard deviation of your vector using the appropriate function. What does the `summary()` function do? How about `class()`. Try it on your vector and describe the results. 
+
+```{r Code_3}
+(mean(my_number_unt))
+(sd(my_number_unt))
+(summary(my_number_unt))
+(class(my_number_unt))
+```
+
+**Summary**
+
+Summary function summarize the input of the object function or the vector, giving us details the mininum value, median, maximum value, etc.
+
+**Class**
+
+Class tells us about the type of the vector or variables in the object i.e whether if it is a string, numeric or dataframe.
+
+5. Add your full name as an item in your vector, show the vector, and check what type of vector it is now with the `class()` function used above. 
+
+```{r Code_4}
+my_number_unt = c(my_number_unt, "Usama Naeem Toor")
+(my_number_unt)
+
+class(my_number_unt)
+
+
+```
+
+The vector changes from numeric to character due to the addition of a string.
+
+### Part 3 - Data frames and Tibbles
+
+1. Install the [world bank indicator package](https://github.com/vincentarelbundock/WDI) `"WDI"` (*see this week's videos for discussion of how to install this package*). Download a series of the "GDP per capita (constant 2000 US$)" data for three countries and assign to an object called "gdpdata_ks" where you replace "ks" with your own initials. *Use a different set of countries as used in the example for the package documentation. In other words, your three countries should not be US, MX, and CA. Note: you can find the two character country codes used by WDI [here as the Alpha 2 column](https://www.nationsonline.org/oneworld/country_code_list.htm)* Use the function `head()` to show the top of your data frame and the function `str()` to describe the structure of your data. How many rows and columns are there in your data? What types of variables are there? Write a few sentences about why you think it is interesting to examine the GDP of the three countries that you chose.
+
+```{r Code_5, eval = FALSE}
+WDI1 = data.frame(WDI())
+view(WDI1)
+```
+
+
+```{r Code_5.5}
+gdpdata_UNT = WDI(country = c("PK", "IN", "BD" ))
+head(gdpdata_UNT)
+str(gdpdata_UNT)
+
+```
+
+
+**Answer** 
+
+First of all, I would like to mention one thing. Since the data was huge and it was hard for me to find the appropriate countries, I made WDI into a data frame, opened it up on my console and then searched for the specific countries from my dataframe to get the codes to search for and the rest procedure is standard for the question.
+
+Secondly, we here have about 4 coloumns and 183 rows. iso2c and country are characters, NY.GDP.PCAP.KD is numeric and year is an integar. The reason why it is interesting to examine the gdp of these three countries is because all of them achieved independence at the same time, and all of them achieved independence from the same colonial masters. Another interesting thing is that all of them share a collective history so any extractive or inclusive institutions they would have would be the same, hence a great indicator for developmental economics. Lastly, this part of the world, South Asia, has one of the highest amount of populaton in the world! 
+
+2. Use the summary function from part 1 to calculate and display summary statistics for the year column in your dataset. What is the first year? What is the last? 
+
+```{r Code_7}
+
+summary(gdpdata_UNT)
+
+```
+**Answer**
+
+First year is 1960, Last year is 2020. However, in the original data, we have no information regarding 2020, it it limited to 2019.  
+
+
+3. Create a new object from your data that is a "tibble". What is a tibble? Show the head of your tibble and comment on how it differs from the head of your data frame from the step above. 
+
+```{r Code_8}
+
+gdpdata_UNT1=(as_tibble(gdpdata_UNT))
+head(gdpdata_UNT1) 
+
+```
+
+**Answer**
+Tibble is a better version of representing and storing data of various different types from data frame. It allows us to monitor the type of data that we have e.g it highlights both iso2c and country as character. On the other hand, it also allows us to see the the number of rows and coloumns e.g 6 x 4 means that 6 rows and 4 coloums. Another important point being that if you do not use head of tibble data, it will only give you the first 10 observations and the rest would not given on the output but indicated, saving us space, e.g "173 more rows," and with that indicates 183 rows and 4 coloumns. 
+
+
+
+### Part 4 - Plots, Plots, and more Plots! 
+
+1. Make sure to read through [Chapter 3](https://r4ds.had.co.nz/data-visualisation.html) of R4DS. Create a scatterplot of the GDP variable obtained in Part 3 and years on the horizontal axis for just one of the three countries you extracted from the `WDI` package. *Note that you can create a new data object that is a subset of your data from part 3 - watch this week's videos for an example.* 
+
+```{r Code_9}
+gdpdata_UNT2 = filter(gdpdata_UNT, iso2c == "PK")
+
+ggplot(data = gdpdata_UNT2) +
+    geom_point(mapping = aes(x = year, y = NY.GDP.PCAP.KD), color = "dark green")
+```
+
+
+2. Create a scatterplot now with all three countries where the points are different colors for each country. Describe the patterns that you see and compare the levels and trends across the three countries. 
+
+```{r Code_10}
+ggplot(data = gdpdata_UNT1) +
+     geom_point(mapping = aes(x = year, y = NY.GDP.PCAP.KD, color = country))
+
+```
+**Answer**
+
+Between 1960s to 1990s, we see Pakistan having the best GDP, followed by India and Bangladesh. However, after 2000s, we see Pakistan's GDP sloping down and India gaining huge momentum. And near to 2020, we observe that Bangladesh takes over Pakistan as well. At current, Pakistan has the lowest GDP while India has the highest. The main trend is that while GDP is increasing for all three nations, India and Bangladesh see it at an increasing rate while Pakitan's growth is at a decreasing rate. 
+
+
+3. Now, instead of depicting all the data on one plot, split your plot into facets (subplots with one for each country) using the `facet_wrap()` option in `ggplot`. Put all three plots in one row. Then look up the options of the `facet_wrap()` and modify your figure so that the scales of the figures are not fixed on the vertical dimension (so that there are different range and scaling of the vertical axis for each subplot). Compare the first and second series of plots and comment on how the information conveyed differs between the two. Describe how you could transform the data to compare how the growth in GDP over this period compares across these three countries *Note, you don't have to do this transformation, we'll return to this next week, just write in this assignment what you might do to compare GDP growth across the three countries.*
+
+```{r Code_11}
+ggplot(data = gdpdata_UNT1) + 
+  geom_point(mapping = aes(x = year, y = NY.GDP.PCAP.KD, color = country)) + 
+  facet_wrap(~ country, nrow = 1, scales = "free")
+```
+
+**Answer** 
+In the first graph, the data of all three countries was pushed into one graph making it difficult to define the growth in the early stage i.e during the 1960s nd 70s. There was a lot of overlapping, even when the color was different for different countries. Moreover, with a different scale now used, it is easily to determine at the rate at which they are all growing, it has become easily to fully appreciate the growth. Secondly, as the scale for each graph is different and we can point out as each at a specific year. This map is much better due to the reasons of overplotting (crowded plots) and specific indications of growth level.  
+
+As for transformation, what I understand from the data is that it is hard to compare the y-axis (GDP) of the three coutnries as the differences are huge, espacially concerning India and the others. In such a circumstance, I believe that a reducing down y-values would help. This could be achieved through the use of log, i.e log10 the y-axis. This transformation would greatly reduce down the value of y-axis and provide us a good range to compare the values with. As for visualization, we can move to more appropriate bases for comparison as well such as ridge plots where density will increase or decrease corresponsding to the year, however, I still feel either line or scatter plot would be a better option here. 
+ 
+
+4. The WDI package has information from over 40 datasets. Use the `WDIsearch()` function in the [WDI package](https://github.com/vincentarelbundock/WDI) to find something other than GDP to compare across your three countries of interest. *There are thousands of variables and no two assignments should have the same variable here.* You might get some ideas of what is in there by looking around on the [DataBank website](https://databank.worldbank.org/home.aspx). Show all the code you use (including the `WDIsearch()`). Describe the variable and use the skills demonstrated in questions above to visualize the changes in this measure over time for your three countries. Discuss and compare the trends. We will select the top 3 most clean, clear and compelling answers for this question for two extra bonus assignment points. *You should not be doing anything much more coplex than what is demonstrated above or in the readings for this week in terms of types of plots or visualization skills. You are, however, strongly encouraged to clarify the visualization by using other types of plots (lines? smooth lines?), relabel the axes to be more clear to someone not familiar with the WDI data, creating a title for your figure, etc. Also note that you may choose variables that are missing or not available when you try to extract the data. Keep trying until you find one that you find interesting that are not missing for these three countries. It's ok if the series is more limited (e.g. from 2000-2017), but find a variable that is available for atleast 5 years for your three countries so that you can assess and compare trends across time.*
+
+```{r Code_12,  eval = FALSE}
+WDIsearch(string = "Unemployment")
+
+```
+
+```{r Code_12.5}
+
+WDI3 = (WDI(country= c("PK", "IN", "BD"), indicator="SL.UEM.TOTL.ZS", start=1990, end=2020,
+    extra=TRUE, cache=NULL))
+
+WDI2.5 = filter(WDI3, iso2c == "PK")
+
+ggplot(data = WDI2.5) +
+    geom_line(mapping = aes(x = year, y = SL.UEM.TOTL.ZS), color = "dark green") + labs(x = "Years", y = "% Unemployment", title = "% Unemployment in Pakistan") + theme(plot.title = element_text(hjust=0.5))
+```
+
+
+```{r Code_13}
+
+
+ggplot(data = WDI3) + geom_line(mapping = aes(x = year, y = SL.UEM.TOTL.ZS, color = country, linetype = country)) + labs(x = "Years", y = "% Unemployment", title = "% Unemployment in South Asia") + theme(plot.title = element_text(hjust=0.5))
+
+```
+
+
+```{r Code_14}
+
+ggplot(data = WDI3) + 
+  geom_line(mapping = aes(x = year, y = SL.UEM.TOTL.ZS, color = country)) + 
+  facet_wrap(~ country, nrow = 1, scales = "free") + labs(x = "Years", y = "% Unemployment", title = "% Unemployment in South Asia") + theme(plot.title = element_text(hjust=0.5))
+
+```
+
+**Answer**
+
+To begin with, I used WDIsearch function to get the indicator for Unemployment. Among the list, I used the overall unemployment rate for my data. After the getting the indicator, I put the value in WDI3 and then made the plot. 
+
+As far as the graph is concerned, beginning in 1990s, the graph shows an extremely low unemployment rate for Pakistan below 1% while Bangladesh has around 2 and India nearly 5.5. However, since 2008, we see an increase in unemployment for both Pakistan and Bangladesh in which Bangladesh recovers afterwards but Pakistan does not. Finally, Pakistan sees an increase in unemployment overtime while Bangladesh, though slow, sees a decrease. Through the whole time span,  India maintains its unemployment at near 5.5%. 
+

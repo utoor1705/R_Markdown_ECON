@@ -1,0 +1,163 @@
+---
+title: "A3-*Usama Naeem Toor*"
+author: "by *Usama Naeem Toor* (*301353233*)"
+date: "*4th Oct 2020*"
+output: html_document
+---
+
+### Assignment 3 Instructions
+
+1. Read [Chapter 3](https://socviz.co/makeplot.html#makeplot) of [**Data Visualization (SOCVIZ)**](https://socviz.co).
+
+2. Read [CH 12.1 and 12.2](https://r4ds.had.co.nz/tidy-data.html) and then [CH 5](https://r4ds.had.co.nz/transform.html) of [**R for Data Science (R4DS)**](https://r4ds.had.co.nz). 
+
+3. Download the markdown file "A3-Your Name.Rmd" from Canvas. Change the name of the file so that your full name appears in the name of the file instead of the words "Your Name". Change the title and author information at the top to reflect your information.  **Independently** complete the steps in each section below, then *knit* your R Markdown Notebook into a ``.html`` file. Submit the completed ``.Rmd`` and ``.html`` file on Canvas. Submit the same ``.html`` file to the course Turnitin link. **Assignment 3 is due by 11:59PM on Sunday October 4. Assignments submitted late will lose one point per 10 minutes late. So 1 point will be deducted if submitted between 12:00-12:09 AM; -2 points 12:10-12:19 AM; ...; -9 points 1:20-1:29 (since assignments are out of 10, no credit for anything after 1:30)** 
+
+### Part 1: Integrity Statement and Assignment References
+
+In submitting this assignment to Canvas, I, *Usama Naeem Toor*, confirm that this work was independently completed and that I have appropriately listed all of my sources below. I understand that if any part of my answers (inlcluding the code I use) are similar enough to indicate non-independent work when compared to the answers from any other student in this course or from prior course materials, then I will receive zero points on this assignment. I also affirm that any answers or code copied or used from other resources online is appropriately referenced and if it is not appropriately referenced than I will receive zero points on this assignment. 
+
+I have used the following materials to complete this assignment: 
+1. [R4DS](https://r4ds.had.co.nz). 
+2. [SOCVIZ](https://socviz.co)
+3. Course lecture videos on Canvas
+4. https://www.youtube.com/watch?v=H1TDXsQK38c
+5. https://github.com/tidyverse/ggplot2/issues/2843
+6. https://globalnews.ca/news/6571354/canadians-return-diamond-princess/
+
+
+NEW: I have used the following R packages to complete this assignment. To replicate, install these packages first.
+1.`tidyverse`
+2. `Coronavirus`
+
+### Part 2 - Tidy data and ggplots
+
+1. Specifically citing rules as to what makes data "tidy" in your R4DS reading this week, explain in your own words whether the data in the image below is "tidy". Be specific about why it is tidy or why it is not tidy.
+
+![Tidy or Not Tidy?](/Users/usama/Downloads/tidyornot.png)
+
+**Answer**
+This data in front of us is **TIDY**. The data format that we have infront of us is Long-format data, rather than wide-format. In this format, what makes it tidy, is that each variable has its own column, each observation has its own row and lastly, each value has its own cell. Placing variables in columns allows R’s vectorised form to be dealt with easily. 
+
+The data
+
+2. Install the `coronavirus` package. Use the help function in your console to read the documentation for this package. Copy and paste the description of the data details from the help file and note the source of the data. 
+
+```{r setup}
+chooseCRANmirror(graphics=FALSE, ind=1)
+knitr::opts_chunk$set(echo = TRUE)
+install.packages("coronavirus")
+```
+**Answer**
+*Description* : Daily summary of the Coronavirus (COVID-19) cases by state/province.
+*Source* : Johns Hopkins University Center for Systems Science and Engineering (JHU CCSE) Coronavirus website.
+  
+3. In an R code chunk, load the library for the `coronavirus` and the `tidyverse` packages, but use the `include=FALSE` option to hide the detials of the packages from your .html file. In a separate R code chunk, create your own data object named `corona_ks` replacing ks with your own initials that is a subset of the `coronavirus` data with the following restrictions: only keep only the observations where the variable `type` is equal to "confirmed" and only keep observations without sub-national data where information is tracked for each province. In other words, keep only rows where `province==""`.  
+
+```{r Code_1, include = FALSE}
+library(coronavirus)
+library(tidyverse)
+```
+
+```{r Code_2}
+corona_unt =filter(coronavirus, type == "confirmed", !province == "")
+tibble(corona_unt)
+```
+
+  
+4. Create a vector that contains the list of the country names in your data. (*I will go over this in the W3 lecture videos.*) How many countries are there? 
+
+```{r Code_3}
+countries_vector= unique(corona_unt$country)                 ### Vector for countries
+countries_list= list(countries_vector)                       ###Made a list
+countries_total = select(corona_unt, country)                ###Total country measurement.
+total_c_list= list(countries_total)                          ###Total country list
+
+countries_vector
+```
+**Answers**
+We have 7 different countries, and the total time of mention is *15552* of all countries.  
+
+5. Use the command `floor(runif(3, min=1, max=188))` to generate 3 random numbers and select these countries from your vector in the previous question. Display this vector so that the numbers show in your knitted .html file. *Note that these three numbers will change every time you run the code, so I recommend using the `set.seed` function at the top of your code chunk. Set the seed to your SID number.* Write a sentence listing the three countries you have randomly selected. 
+
+```{r Code_4}
+set.seed(301353233)
+x = floor(runif(3, min=1, max=18))
+countries_sample = countries_vector[x]
+
+x
+countries_sample
+```
+
+**Answer**
+We have three countries that have been displayed, Australia, Canada and the United Kingdom.
+ 
+6. Create a subset of the `corona_ks` data (will have your initials instead of "ks") that includes the three countries you selected in part 5. Using the example in [SOCVIZ](https://socviz.co/makeplot.html#makeplot) Figure 3.15, create a plot with days on the horizontal axis, the number of cases on the vertical axis, and colors (and fills) for the three different countries. *Ignore the `scale_x_log10` option in Figure 3.15.* Relabel the vertical axis "Confirmed COVID-19 Cases" and remove the axis label for the x axis since it is obvious that the axis is time. Create a title for your graph along the lines of "Confirmed Daily COVID-19 Cases in Country1, Country2 and Country3". Customize the date axis labels so that your plot includes labels for the beginning of each month (*see [this blog post](https://www.r-bloggers.com/2018/06/customizing-time-and-date-scales-in-ggplot2/) for help*). Finally, change the size of the figure to 8 inches wide by 5 inches high in the options to your R code chunk as discussed in SOCVIZ CH3. Write a brief paragraph comparing and contrasting the patterns you see in the three countries. Are there any surprises? 
+
+```{r Code_5, fig.width = 8, fig.height = 5}
+work = filter(corona_unt, country == countries_sample)
+corona_graph = select(work, date, cases, country)
+ggplot(data = corona_graph, 
+       mapping = aes(x = date, y = cases, fill = country, col = country)) + 
+       geom_point() +
+       geom_smooth(method = "loess") + 
+       labs( y = "Confirmed COVID-19 Cases", title = "Confirmed Daily COVID-19 Cases in Australia, Canada and United Kingdom", x = "") + 
+      theme(plot.title = element_text(hjust=0.5)) + 
+       scale_x_date(date_breaks = "1 month")
+
+```
+
+
+**Answer**
+
+All of the three countries had low Covid-19 cases before March 2020, however, by the end of the month, cases began to rise rapidly in both Canada and Australia with a really high number of cases in Canada from April beginning to Mid-June. While Australia seemed to be able to control the increase in its early stages, Canada took till July to bring down the cases. However, cases in Australia began to rise from start-July to being nearly 700 by the end of July. While cases in Canada came down and cases in Australia rose, cases in the United Kingdom remained consistantly low. 
+
+The biggest surprise for me here is the validity of data. While I can believe the statistics for Canada and Australia, from what I know, the UK has a high number of COVID-19 cases, probably one of the highest in the world. Yet, I see no representation of that data here. The data, in my view, seems rather faulty here, UK can not have that low COVID-19 cases. If UK does have that many low cases, then I am highly surprised!
+
+
+### Part 4 - More data transformation skills
+
+1. Going back to the original dataset, use the data transformation functions `filter()` to create a data object that contains data on COVID-19 mortality (`type=="deaths"`) in Canada for each province (do not filter on `province==""` as we did before). Then, use the functions `select()` to only keep the variables date, province and cases. Use `arrange()` to sort the tibble by date and show the first 30 rows. Note whether you see any rows that are not Canadian provinces or territories. If they are not provinces or territories, what are they? Also show the structure of your data and note the type of each of the three variables. 
+
+```{r Code_6}
+Covid_Canada = coronavirus %>% filter(type=="death", country == "Canada") %>% select(date, province, cases) %>% arrange(date)
+
+head(Covid_Canada, 30)
+tibble(Covid_Canada)
+```
+
+**Answer**
+Yes, we do have observations that are not part of Canadian provinces/territories. E.g, *Diamond Princess and Grand Princess*. Surprisingly, Diamond Princess and Grand Princess are two cruise ships where people were affected by COVID-19 and they had to be evacuted. 
+
+As far as the structure is concerned, date is <date>, province is character (<chr>) and type is character <chr> data type as well. 
+
+
+2. Slect two provinces or territories, collect their Q1 2020 population from [Stats Canada](https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1710000901) and use the `mutate()` function to create a new column that represents the deaths per 100,000 persons in the province. (*Using the `ifesle()` fucntion within the `mutate()` function is one way to do this which I will discuss in the W3 lecture videos*).
+
+```{r Code_7}
+BC_AB_Covid = Covid_Canada %>% filter(province == "British Columbia" | province =="Alberta")                                  ##To check the operators, I did it this way.
+
+BC_AB_Stat = mutate(BC_AB_Covid, death_per_100000 = ifelse(province == "Alberta", (cases/4361694)*100000, (cases/5090955)*100000))
+
+tibble(BC_AB_Stat)
+
+```
+
+3. Using this coronavirus data from your two provinces of interest, create the most beautiful plot that you can. One that you think provides the best possible visual comparison of COVID-19 mortality trends across the allows you to compare and contrast rates across the two provinces you chose. Write a paragraph describing why you chose these two provinces and what your visualization illustrates about COVID-19 in these two provinces. We will select the top 3 most clean, clear and compelling answers for this question for one extra bonus assignment point. 
+
+
+```{r Code_8, fig.width = 18, fig.height = 10}
+ggplot(data=BC_AB_Stat, aes(x=date, y=death_per_100000, col = province, fill = province)) + geom_smooth(method = "loess", alpha = 0.2) +  
+labs( y = "Cases of Death", title = "Death Cases in British Columbia and Alberta", x = "") + 
+theme(plot.title = element_text(hjust=0.5), text = element_text(size = 25), legend.key.size = unit(5, "lines")) + 
+scale_x_date(date_breaks = "1 month") 
+
+```
+
+**Answer**
+
+To begin with, the reason why I selected BC and AB is because both of them are close to each other and both of them portray a different socio-economic background. While in BC, we might experience less ignorance towrds COVID-19, in AB we will see more. Moreover, BC hosts a larger Asian population who, in the beginning due to travel, might have increased COVID-19 cases, hence factors fare worse for BC. However, the ignorance part of AB, would it be a bigger factor? To compete one subject with less ignorance but more risk with a subject with less risk and more ignorance is my subject here. 
+
+Rather than going for geom_points and geom_line, I went for geom_smooth as I am more interested in the trend, keeping in mind the error margin. I used Alpha here as well to see how much error co-incidence I can observe. Moreover, I am not interested in the final cases value as that is something I can obtain easily from the view option, hence I am concerned of the trend more. 
+
+From my graph, the trend supports my thesis of BC being at more risk. BC has higher case in the beginning but with more attention towards COVID-19, we see BC being able to reduce the curve eventually. While AB does the same as well, from middle of June, we see the curve rising again and reaching high number as compared to BC. At the end, BC seems to have recovered well, however, AB has gone more into trouble. It goes to show that not paying attention to COVID-19 pays, while paying more attention eventually results in better results. 
