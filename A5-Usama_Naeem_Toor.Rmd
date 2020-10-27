@@ -1,0 +1,178 @@
+---
+title: "A5-*Usama Naeem Toor*"
+author: "by *Usama Naeem Toor* (*301353233*)"
+date: '*24th Oct 2020*'
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+---
+
+### Assignment 5 Instructions
+
+1. Read [Chapter 5 of SOCVIZ](https://socviz.co/workgeoms.html#workgeoms).
+
+2. Read [CH 7 of R4DS](https://r4ds.had.co.nz/exploratory-data-analysis.html)
+
+3. Download the markdown file "A5-Your Name.Rmd" from Canvas. Change the name of the file so that your full name appears in the name of the file instead of the words "Your Name". Change the title and author information at the top to reflect your information.  **Independently** complete the steps in each section below, then *knit* your R Markdown Notebook into a ``.html`` file. Submit the completed ``.Rmd`` and ``.html`` file on Canvas. Submit the same ``.html`` file to the course Turnitin link. **Assignment 5 is due by 11:59PM on Sunday October 25. Assignments submitted late will lose one point per 10 minutes late. So 1 point will be deducted if submitted between 12:00-12:09 AM; -2 points 12:10-12:19 AM; ...; -9 points 1:20-1:29 (since assignments are out of 10, no credit for anything after 1:30)** 
+
+### Part 1: Integrity Statement and Assignment References
+
+In submitting this assignment to Canvas, I, **Usama Naeem Toor**, confirm that this work was independently completed and that I have appropriately listed all of my sources below. I understand that if any part of my answers (inlcluding the code I use) are similar enough to indicate non-independent work when compared to the answers from any other student in this course or from prior course materials, then I will receive zero points on this assignment. I also affirm that any answers or code copied or used from other resources online is appropriately referenced and if it is not appropriately referenced than I will receive zero points on this assignment. 
+
+I have used the following materials to complete this assignment: 
+1. [R4DS](https://r4ds.had.co.nz). 
+2. [SOCVIZ](https://socviz.co)
+3. Course lecture videos on Canvas
+4. **https://ggplot2.tidyverse.org/reference/scale_continuous.html#examples **
+5. **https://www.youtube.com/watch?v=rlvWJdjYo1g**
+
+NEW: I have used the following R packages to complete this assignment. To replicate, install these packages first.
+1.`tidyverse`
+2. `ggrepel`
+3. `socviz` 
+
+### Part 2 - Data import, manipulation and visualization
+
+```{r setup}
+library(tidyverse)
+library(ggrepel)
+library(socviz)
+
+```
+
+1. Download the file "CLFS-August_F1.csv" to the same folder you have your .Rmd file saved. This is the most recent data (August 2020) from the Canadian Labour Force Survey which is used to document employment-related outcomes for individuals across Canada. Note that this data is not "nice" in terms of variable names / labels etc. The codebook file posted "Labour Force Survey, August 2020 [Canada].pdf" will be an important resource for this week's assignment. Use the appropriate function from [CH 11 in R4DS](https://r4ds.had.co.nz/data-import.html) for reading in comma delimmited files and give your tibble a name that makes sense to you. Use the `str()` function and note how many observations and how many variables there are in your data.
+
+```{r Code_1}
+CanadianLFS = read_csv("CLFS-August_F1.csv")
+str(CanadianLFS)
+```
+**Answer**
+The total amount of variables present in the tibble are 60, whereas the total amount of observations are 85453.
+
+
+
+2. Note that there is a variable `CMA` with a different numeric code for of the nine largest cities in Canada. In one step using the pipe functions accomplish the following: filter your data so that you only include observations from the nine largest cities (drop if `CMA` is equal to zero) and create a new variable (column) that contains the name of the city of each observation using the numeric codes listed in the Labour Force Survey codebook posted (search for the details of the CMA variable in the pdf). Once you have the new column, display a vector of all the CMA's in your new variable using the `unique()` function. **Note that you may have to use the `if_else()` function several times to assign character values to your new variable based on the numerical values of the `CMA` variable.**
+
+```{r Code_2}
+CanadianLFS_1 = CanadianLFS %>% filter(CMA != 0) %>% mutate(NameCity =  ifelse(CMA == 1, "Quebec", ifelse(CMA == 2, "Montreal", ifelse(CMA == 3, "Ottawa", ifelse(CMA == 4, "Toronto", ifelse(CMA == 5, "Hamilton", ifelse(CMA == 6, "Winnipeg", ifelse(CMA == 7, "Calgary", ifelse(CMA == 8, "Edmonton", ifelse(CMA == 9, "Vancouver", NA))))))))))
+
+Cities_Name = unique(CanadianLFS_1$NameCity)
+
+Cities_Name
+```
+
+
+3. Create a graph similar to [figure 5.2 in SOCVIZ](https://socviz.co/workgeoms.html#workgeoms) where you display the percent of observations by immigrant status in each of the 9 CMAs. The immigrant status variable is named `IMMIG` and has three categories: =1 if immigrant and arrived within 10 years; =2 if immigrant and arrived more than 10 years ago; =3 if non-immigrant. Create a new categorical variable equal to "immigrant" if `IMMIG` equals one or two and equal to "native" if `IMMIG` equals three. You should have 9 different CMAs on the horizontal axis and 2 bars for each CMA displaying the percent of individuals who are immigrants vs. native. 
+
+```{r Code_3}
+CanadianLFS_2 = CanadianLFS_1 %>% mutate(IMMIG_status = ifelse(IMMIG == 1 | IMMIG == 2 , "Immigrant", "Native")) %>% group_by(IMMIG_status, NameCity) %>% summarize(N = n()) %>% mutate(Percent_Values = (N / sum(N))*100) %>% ggplot(mapping = aes(x = NameCity, y = Percent_Values, fill = IMMIG_status)) + geom_col(position = "dodge2") + labs(x = NULL, y = "Percent Values", title = "Immigrant Status %") +  theme(plot.title = element_text(hjust=0.5)) 
+
+CanadianLFS_2
+
+```
+
+
+4. Improve your plot from the previous question so that the cities are ordered from highest immigrant percentage to lowest. You may need to create a new variable of the percent immigrant in a city to use in your `reorder()` function (**See examples in [Section 5.2 of SOCVIZ](https://socviz.co/workgeoms.html#workgeoms)**). Make the graph as compelling as possible: flip the axes so that the cities are listed vertically and the `pct` variable is displayed on the horizontal axis; add a title; add a note indicating the source of the data (you can add a caption within `labs()`); make any other improvements you think that make the graph an excellent visualization! Write a sentence describing which cities in Canada have the highest and lowest proportion of immigrant workers. 
+
+```{r Code_4}
+CanadianLFS_2 = CanadianLFS_1 %>% mutate(IMMIG_status = ifelse(IMMIG == 1 | IMMIG == 2 , "Immigrant", "Native")) %>% group_by(IMMIG_status, NameCity) %>% summarize(N = n()) %>% mutate(Percent_Values = (N / sum(N))*100) %>% ggplot(mapping = aes(x = reorder(NameCity, Percent_Values), y = Percent_Values, fill = IMMIG_status)) + geom_col(position = "dodge2") + labs(x = NULL, y = "Percent Values", title = "Immigrant Status %", caption = "Source: Labour Force Survey, August 2020 [Canada]") +  theme(plot.title = element_text(hjust=0.5)) + coord_flip() 
+
+CanadianLFS_2
+```
+
+
+**Answer**
+Toronto has the highest number of Immigrants followed by Winnipeg, Vancouver and Montreal. The lowest immigrants are in Hamilton, Quebec and Ottawa. To conclude, Highest number in Toronto, lowest in Hamilton.
+
+
+5. You next want to visualize average hourly earnings (`HRLYEARN`) across the 9 major Canadian cities. Your goal is to create a "dot-and-whisker" plot similar to (Figure 5.15 in SOCVIZ)[https://socviz.co/workgeoms.html#workgeoms]. Start with the data object created in question 2 and filter your data so that you remove anyone with missing earnings and use the `group_by()` and `summarize()` functions to create a data object where you have one observation for each CMA and have a column measuring the mean of `HRLYEARN` for the city and a column measuring the standard deviation of `HRLYEARN` for the city. Show your data (it's ok here since its only 9 observations). Then create the "dot-and-whisker" plot similar to Figure 5.15 in SOCVIZ. Make your graph as beautiful and informative as possible! Comment on which city has the highest average wage and which city has the most variation in wages. 
+
+```{r Code_5}
+WageBox = CanadianLFS_1 %>% filter(HRLYEARN != "NA") %>% group_by(NameCity) %>%summarize( N = n(), WageMean= mean(HRLYEARN, na.rm = TRUE), WageSd = sd(HRLYEARN, na.rm = TRUE))
+
+WageBox
+
+ggplot(data = WageBox, mapping = aes(x = reorder(NameCity, WageMean), y = WageMean, col = NameCity)) + geom_pointrange(mapping = aes(ymin = WageMean - WageSd, ymax = WageMean + WageSd)) + coord_flip() + labs(y= "Statistics about Hourly Earnings", x= "City Names", title = "Dot-and-Whisker Plot regarding Average hourly earnings") +  theme(plot.title = element_text(hjust=0.5)) 
+
+```
+
+
+
+6. You next want to compare the unemployment rate across the nine major cities. The unemployment rate is the number of unemployed individuals divided by the total number of individuals in the labour force. Look through the codebook to find the right variables to use to cacluate the unemployemnt rate. Starting with the data created in question 2, use your data transformation and visualization skills to provide a figure that allows the user to compare the unemployment rate across the nine cities in the most compelling and clear way that you can. Write a few sentences describing your figure and what you can learn from the figure. 
+
+```{r Code_6}
+CanadianLFS_Provincial = CanadianLFS_1 %>% filter(LFSSTAT != 4) %>% mutate(UMP_status = ifelse(LFSSTAT == 3, "Unemployed", "Employed")) %>% group_by(NameCity, UMP_status) %>% summarise(LFCat = n()) %>% mutate(LFPro = sum(LFCat)) %>% mutate(pct= (LFCat/sum(LFCat))*100) %>% filter(UMP_status == "Unemployed") %>% ggplot(mapping = aes(x = NameCity, y = pct, fill = NameCity)) + geom_bar(stat = "identity") + labs(x = NULL, y = "Percent Values", title = "Unemployment Rate (Within Cities)", caption = "Source: Labour Force Survey, August 2020 [Canada]") +  theme(plot.title = element_text(hjust=0.5)) + coord_flip() 
+
+CanadianLFS_Provincial
+
+CanadianLFS_National = CanadianLFS_1 %>% filter(LFSSTAT != 4) %>% mutate(UMP_status = ifelse(LFSSTAT == 3, "Unemployed", "Employed")) %>% group_by(UMP_status, NameCity) %>% summarise(LFPro = n()) %>% mutate(LFNat = sum(LFPro)) %>% mutate(pct= (LFPro/(14246+1878))*100) %>% filter(UMP_status == "Unemployed") %>% ggplot(mapping = aes(x = NameCity, y = pct, fill = NameCity)) + geom_bar(stat = "identity") + labs(x = NULL, y = "Percent Values", title = "Unemployment Rate (Within Canada)", caption = "Source: Labour Force Survey, August 2020 [Canada]") +  theme(plot.title = element_text(hjust=0.5)) + coord_flip() 
+
+CanadianLFS_National
+
+
+
+```
+
+
+**Answer**
+Just to be sure, for this question, I went along with two approaches, one working with the national Labour force, the other with the cities labour force. Doing both the graphs seperately had their perks. While cities in Alberta have the highest in-cities unemployment rate, they have lower one when it comes to the national rate and that is something we can attritube to the population of the labour force present in each city and the number of opportunities available, compared to other cities or national one. 
+
+The trend (in-cities) seems to be that all cities face high unemployment above 5% except for Quebec, however, when it comes to within Canada, that high rate only pertains to Winnipeg and Toronto, whilst all others have low unemployment rate. Curiously, Quebec has low unemployment throughout both approaches making it the least unemployed city. Unlike its other city, Montreal holds high unemployment rate in both graphs, being thrid highest within Canada, and one of the highest ones in the in-cities approach. Another point to note is that cities in Alberta, Edmonton and Calgary, both hold considerable unemployment rate even in national data, whilst in the within-cities they have the highest ones.
+
+In the end, since a huge chuck of information was missing from the database (meaning the NA values), we can not decisively conclude any results at this point. 
+
+
+7. Create a plot similar to [Figure 5.18 in SOCVIZ](https://socviz.co/workgeoms.html#workgeoms) where the x-axis is unemplyment rate, the y-axis is average hourly earnings, and each point represents a city-immigrant status combination. So you should have two points for each city, one for immigrants and one for natives with labels on the graph indicating which group's earnings and unemployment rate is represented by the dot. Make your graph as informative as possible. Make it beautiful! Write a few sentences describing any interesting patterns. 
+
+```{r Code_7}
+Table1 = CanadianLFS_1 %>% mutate(IMMIG_status = ifelse(IMMIG == 1 | IMMIG == 2 , "Immigrant", "Native")) %>% filter(LFSSTAT != 4) %>% mutate(UMP_status = ifelse(LFSSTAT == 3, "Unemployed", "Employed")) %>% group_by(NameCity,IMMIG_status, UMP_status) %>% summarise(LFCat = n()) %>% mutate(LFPro = sum(LFCat)) %>% mutate(pct= (LFCat/sum(LFCat))*100) %>% filter(UMP_status == "Unemployed")
+
+Table2 = CanadianLFS_1 %>% mutate(IMMIG_status = ifelse(IMMIG == 1 | IMMIG == 2 , "Immigrant", "Native")) %>% filter(HRLYEARN != "NA") %>% group_by(IMMIG_status, NameCity) %>%summarize( N = n(), WageMean= mean(HRLYEARN, na.rm = TRUE))
+
+Table3 = merge(Table1, Table2, by = c("NameCity","IMMIG_status"))
+
+ggplot(Table3, aes(x = pct, y = WageMean, col = NameCity, label = IMMIG_status, fill = NameCity)) + geom_point(aes(shape = IMMIG_status, stroke = 2.5)) + geom_text_repel() + labs(x = "Unemployment Rate", y = "Average Hourly Earning", title = "Analysis of Unemployment & Hourly Wages (Within Cities)", subtitle = "Native vs Immigrants", caption = "Source: Labour Force Survey, August 2020 [Canada]") +  theme(plot.title = element_text(hjust=0.5)) + geom_line(aes(group=NameCity, linetype = NameCity), size = 0.5)
+
+Table4 = CanadianLFS_1 %>% mutate(IMMIG_status = ifelse(IMMIG == 1 | IMMIG == 2 , "Immigrant", "Native")) %>% filter(LFSSTAT != 4) %>% mutate(UMP_status = ifelse(LFSSTAT == 3, "Unemployed", "Employed")) %>% group_by(NameCity,IMMIG_status, UMP_status) %>% summarise(LFPro = n()) %>% mutate(LFNat = sum(LFPro)) %>% mutate(pct= (LFPro/(14246+1878))*100) %>% filter(UMP_status == "Unemployed")
+
+Table5 = merge(Table4, Table2, by = c("NameCity","IMMIG_status"))
+
+ggplot(Table5, aes(x = pct, y = WageMean, col = NameCity, label = IMMIG_status, fill = NameCity)) + geom_point(aes(shape = IMMIG_status, stroke = 2.5)) + geom_text_repel() + labs(x = "Unemployment Rate", y = "Average Hourly Earning", title = "Analysis of Unemployment & Hourly Wages (Within Canada)", subtitle = "Native vs Immigrants", caption = "Source: Labour Force Survey, August 2020 [Canada]") +  theme(plot.title = element_text(hjust=0.5)) + geom_line(aes(group=NameCity, linetype = NameCity), size = 0.5)
+
+
+
+```
+
+**Answer**
+Two interesting aspect arrive to us when completing these graphs. First, in both graphs, we observe that in every province, Natives tend to earn more than Immigrants, showing a bit of discrimination among them. This discrimiation is more prevalent in places with less diversity such as Winnipeg, and less in more diverse places such as Toronto. 
+
+Secondly, what we observe within Cities is that Immigrants almost always have high unemployment rate, expect for Vancouver. This trajectory however is contradicted when we compare it to within Canada where the trend is almost opposite to what we observe within cities. On the Within Canada graph, we observe Immigrants having a better Unemployment rate than Natives in all Cities. 
+
+
+8. Choose one of the nine cities and use your data visualization skills to describe the relationship between  highest educational attanment (`EDUC`) and unemployment rates for individuals over 25 years of age. Explore how this relatioship is different for men vs. women. **Note that this is an open question and intentionally vague to encourage you to think about how you might be able to convey this type of information. No two answers should be remotely similar, so please be creative and do the best that you can.**
+
+
+```{r Code_8}
+Canada_Ed = CanadianLFS_1 %>% filter(AGE_6 %in% c(5,6) & NameCity == "Edmonton" & LFSSTAT != 4) %>% mutate(EduLevel =  ifelse(EDUC == 0, "0 to 8 years", ifelse(EDUC == 1, "Some high school", ifelse(EDUC == 2, "High school graduate", ifelse(EDUC == 3, "Some postsecondary", ifelse(EDUC == 4, "Postsecondary certificate or diploma", ifelse(EDUC == 5, "Bachelor's degree", "Above bachelor's degree"))))))) %>% mutate(Sex_Or =  ifelse(SEX == 1, "Male", "Female")) %>% mutate(UMP_status = ifelse(LFSSTAT == 3, "Unemployed", "Employed")) %>% group_by(EduLevel, UMP_status, Sex_Or) %>% summarise(LFCat = n()) %>% mutate(LFPro = sum(LFCat)) %>% mutate(pct= (LFCat/sum(LFCat))*100) %>% filter(UMP_status == "Unemployed")
+
+Canada_Ed %>% ggplot(mapping = aes(x = reorder(EduLevel, pct), y = pct, fill = Sex_Or)) + geom_col(position = "dodge2") + labs(x = NULL, y = "Percent Values of Unemployment", title = "Unemployment in Edmonton related to Education (Within Edmonton)", caption = "Source: Labour Force Survey, August 2020 [Canada]") +  theme(plot.title = element_text(hjust=0.5)) + coord_flip()
+
+
+Canada_EdNa = CanadianLFS_1 %>% filter(AGE_6 %in% c(5,6) & NameCity == "Edmonton" & LFSSTAT != 4) %>% mutate(EduLevel =  ifelse(EDUC == 0, "0 to 8 years", ifelse(EDUC == 1, "Some high school", ifelse(EDUC == 2, "High school graduate", ifelse(EDUC == 3, "Some postsecondary", ifelse(EDUC == 4, "Postsecondary certificate or diploma", ifelse(EDUC == 5, "Bachelor's degree", "Above bachelor's degree"))))))) %>% mutate(Sex_Or =  ifelse(SEX == 1, "Male", "Female")) %>% mutate(UMP_status = ifelse(LFSSTAT == 3, "Unemployed", "Employed")) %>% group_by(EduLevel, UMP_status, Sex_Or) %>% summarise(LFPro = n()) %>% mutate(LFNat = sum(LFPro)) %>% mutate(pct= (LFPro/(14246+1878))*100) %>% filter(UMP_status == "Unemployed")
+
+Canada_EdNa %>% ggplot(mapping = aes(x = reorder(EduLevel, pct), y = pct, fill = Sex_Or)) + geom_col(position = "dodge2") + labs(x = NULL, y = "Percent Values of Unemployment", title = "Unemployment in Edmonton related to Education (Within Canada)", caption = "Source: Labour Force Survey, August 2020 [Canada]") +  theme(plot.title = element_text(hjust=0.5)) + coord_flip()
+
+
+```
+
+
+**Answer**
+
+To begin with, since not a lot of data is provided to us, our analysis can be wrong as not a lot of observations were found while conducting the analysis. Beginning with "Within Edmonton" data, we find that Female are generally less unemployed than men where in every category except High School, they have a lower rate of unemployment. This, however, can also be creditted to less amount of woman in the work force. 
+
+Secondly, in "Within Canada" data, we find a similar trajectory where rate of unemployment for woman is in comparison to national population. Data indicates that while in Bachelor's AND Postsecondary Certificate woman fare a less unemployment rate, in high School, Man fare far better than woman. 
+
+Overall, females fare better than man in both in-City and in-Canada data.
+
+
