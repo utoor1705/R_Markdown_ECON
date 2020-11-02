@@ -1,0 +1,162 @@
+---
+title: "A6-*Usama Naeem Toor*"
+author: "by *Usama Naeem Toor* (*301353233*)"
+date: '*31th Oct 2020*'
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+---
+
+### Assignment 6 Instructions
+
+1. Read [Chapter 6](https://socviz.co/modeling.html#modeling) of [**Data Visualization (SOCVIZ)**](https://socviz.co).
+
+2. Download the markdown file "A6-Your Name.Rmd" from Canvas. Change the name of the file so that your full name appears in the name of the file instead of the words "Your Name". Change the title and author information at the top to reflect your information.  **Independently** complete the steps in each section below, then *knit* your R Markdown Notebook into a ``.html`` file. Submit the completed ``.Rmd`` and ``.html`` file on Canvas. Submit the same ``.html`` file to the course Turnitin link. **Assignment 6 is due by 11:59PM on Sunday November 1. Assignments submitted late will lose one point per 10 minutes late. So 1 point will be deducted if submitted between 12:00-12:09 AM; -2 points 12:10-12:19 AM; ...; -9 points 1:20-1:29 (since assignments are out of 10, no credit for anything after 1:30)** 
+
+### Part 1: Integrity Statement and Assignment References
+
+In submitting this assignment to Canvas, I, **Usama Naeem Toor**, confirm that this work was independently completed and that I have appropriately listed all of my sources below. I understand that if any part of my answers (inlcluding the code I use) are similar enough to indicate non-independent work when compared to the answers from any other student in this course or from prior course materials, then I will receive zero points on this assignment. I also affirm that any answers or code copied or used from other resources online is appropriately referenced and if it is not appropriately referenced than I will receive zero points on this assignment. 
+
+I have used the following materials to complete this assignment: 
+1. [R4DS](https://r4ds.had.co.nz). 
+2. [SOCVIZ](https://socviz.co)
+3. Course lecture videos on Canvas
+4. https://stats.stackexchange.com/questions/264444/how-to-use-only-a-subset-of-variables-in-r-using-the-lm-function
+
+NEW: I have used the following R packages to complete this assignment. To replicate, install these packages first.
+1.`tidyverse`
+2. 
+
+### Part 2 - Data import, manipulation, modelling and visualization
+
+```{r setup}
+library(tidyverse)
+```
+
+1. Download the file "England_historical_GDP.csv" to the same folder you have your .Rmd file saved. This is a historical time series of the GDP of England starting in the year 1270! This data is part of the [Bank of England's "A millennium of macroeconomic data"](https://www.bankofengland.co.uk/statistics/research-datasets). What variables are contained in the dataset? Use a function to show what the minimum and maximum year contained in the data series. *Note that the GDP variable and population variable are measured in millions*. 
+
+```{r Code_1}
+MainDS = read_csv("England_historical_GDP.csv")
+summary(MainDS)
+```
+
+
+**Answer**
+There are three variables, Year, realGDP and population. 
+
+
+
+2. Create a new variable that represents GDP per capita (GDP per person) and another variable that is the natural logarithm of GDP per capita. Use `ggplot` and `geom_line` to create a plot with year on the horizontal axis and GDP per capita on the vertical axis and a line connecting annual measures of the log of England's GDP per capita from 1270 through 2016. Make the plot as clear and visually appealling as possible. Write a description of the plot including a justification for plotting the natural log of GDP per capita rather than the levels of GDP per capita. 
+
+```{r Code_2}
+MainDS %>% mutate(GDP_per_Capita = (realGDP/population), log_GDPCapita = log(GDP_per_Capita)) %>% ggplot(aes(x = Year, y = log_GDPCapita)) + geom_line(aes(color = "Line for the Graph")) + labs( y = "Log GDP per Capita", title = "Log of GDP per Capita over the Years", x = "Years", color = "Line Type") + theme(plot.title = element_text(hjust=0.5))
+```
+
+**Answer**
+Beginning in the late 1200s, we observe England have a log GDP per Capita below 7, however, after 1400s, we see a huge stability around 7 lasting for more than 300 years till the 1700s. From mid 1700s, we see an increase and that increase grows at a great rate, only experiencing a fall in the early 1900s, probably the two World Wars. Since then, England maintains its huge growth only observing a small back-down in the 2000s.
+
+The reason why we utilize log GDP per Capita and not GDP_per Capita itself is that by using Log, we can make better comparsions between years than in GDP per Capita. Not only is the y-axises giving us a small number to compare it with, unlike in GDP per Capita where we deal in large numbers like 200000, but we are able to see the trend on a more Micro-level scale, allowing us to make better comparisons. We are able to observe both micro dips and rises, while in GDP per Capita, it is only a Macro measure. Due to this effect, we can measure variables such as change in log GDP per Capita, and by how much increase and decrease from last year to the next one, so many micro variables can be measured and compared easily. Basically, easier to make analysis and calculations now. 
+
+
+3. Create a plot with a line depicting a linear trend, a quadratic trend, and a cubic trend. You could do this in several different ways, but I recommend using the `lm` option within `geom_smooth` and modifying the formula as demonstrated in the lecture videos this week using the `poly()` function to create a quadratic or cubic fit. Remove the standard error bands with the option `se=FALSE`. Add a legend that describes each model as "linear", "quadratic", or "cubic". Comment on which model appears to best fit the actual data.
+
+```{r Code_3}
+MainDS %>% mutate(GDP_per_Capita = (realGDP/population), log_GDPCapita = log(GDP_per_Capita)) %>% ggplot(aes(x = Year, y = log_GDPCapita)) + geom_line(aes(color = "Line for the Graph")) + labs( y = "Log GDP per Capita", title = "Log of GDP per Capita over the Years", x = "Years", color = "Line Type") + theme(plot.title = element_text(hjust=0.5)) + geom_smooth(method = "lm", formula = y ~ poly(x,2), se = FALSE, aes(color = "Quadratic") ) + geom_smooth(method = "lm", formula = y ~ poly(x,3), se = FALSE, aes(color = "Cubic") ) + geom_smooth(method = "lm", formula = y ~ poly(x,1), se = FALSE, aes(color = "Linear"))
+```
+
+**Answer**
+While Linear model seemed to be way off the charts, Cubic and Quadratic were close. In the end, Cubic model was much more in line with the main line than Quadratic. 
+
+
+4. Choose two separate centuries of English history from the following list. Write a statement as to which ceturies you choose and why you are interested in these two centuries (your choice and justification should not be the same as any other student!).
+
+- 14th century, 1301-1400
+- 15th century, 1401-1500
+- 16th century, 1501-1600
+- 17th century, 1601-1700
+- 18th century, 1701-1800
+- 19th century, 1801-1900
+- 20th century, 1901-2000
+
+**Answer**
+For this question, I chose the 19th and the 20th century. 19th Century because England was colonizing most of the world at that time and 20th because of the two Great Wars and England losing its power as one of the major nations. 
+
+
+
+Now, accomplish the following: 
+
+a) From the data used in Q2, filter such that you only keep the two centuries of your choice and create two new variables: one measuring the century number and another measuring the year within the century. For example, if I choose the 18th century, I want a new variable named "century" equal to "18th" for the observations during this century and another variable named "yearnumber" equal to 1 for 1701, 2 for 1702, etc.
+
+```{r Code_4}
+Q4C = MainDS %>% mutate(GDP_per_Capita = (realGDP/population), log_GDPCapita = log(GDP_per_Capita)) %>% filter(Year > 1799 & Year < 2000) %>% mutate(century = ifelse(Year > 1899, "20th", "19th")) %>% mutate(yearnum = ifelse(Year < 1900, -1 + row_number(), -101 + row_number()))
+
+Q4C
+
+```
+
+b) Create a plot whith "yearnumber" on the horizontal axis, log of real GDP per capita on the vertical axis, and a scatter plot using geom_point with a different color for each century. 
+```{r Code_5}
+Q4C %>% ggplot(aes(x = yearnum, y = log_GDPCapita, col = century, group = century)) + geom_point()
+
+```
+
+  
+c) Overlay a linear trend on each series (so two linear fit lines, one for each century). 
+
+```{r Code_6}
+Q4C %>% ggplot(aes(x = yearnum, y = log_GDPCapita, col = century, group = century)) + geom_point() + geom_smooth(method = "lm", formula = y ~ x, se = FALSE)
+
+```
+
+  
+d) Following [Section 6.2 of SOCVIZ](https://socviz.co/modeling.html#modeling), create an object for each century that contains the results from a linear regression where the natural log of real GDP per capita is the dependent (left hand side or "y") variable and "yearnumber" is the independent (right hand side or "x") variable. You should be using the `lm()` function. Show the contents of this object for each century and relate the coefficient on the independent trend variable to the lines in your graph from the previous question. 
+
+```{r Code_7}
+Reg_1 = lm(log_GDPCapita ~ yearnum, data = Q4C[Q4C$century == "19th", ])
+summary(Reg_1)
+
+Reg_2 = lm(log_GDPCapita ~ yearnum, data = Q4C[Q4C$century == "20th", ])
+summary(Reg_2)
+```
+
+
+**Answer**
+Observing the 19th Century first, we observe the intercept point to be 7.47, which is very close to 7.5 meaning that our intercept is correct. Moreover, our growth estimate is 0.0085, meaning a slow position increase which is evident on the graph as well. 
+
+Now for the 20th Century, we observe the intercept point to be 8.10 which is close to our graph number between 8.00 and 8.25, hence our intercept can be deemed as right. Once again we have a positive growth of 0.017 which we observe on the graph as well.
+
+
+  
+e) Interpret the estimated coefficients stored in the linear regression results by inserting the appropriate numbers in the following statement. "In the XXth century, the growth trend in GDP was XX% per year; whereas in the YYth century, the growth trend in GDP was XX% per year."
+
+
+**Answer**
+"In the 19th century, the growth trend in GDP was 0.85% per year; whereas in the 20th century, the growth trend in GDP was 1.7% per year."
+
+
+5. **More Difficult - will be worth 1 out of 10 points** For just one of the centuries you chose above in question 4, create a plot that includes a prediction line and confidence interval that extends 15 years past the time interval in your particular century using a cubic model. Overlay scatter points of the observed GDP values and comment on whether the forecast/prediction is close or not close to what happenned over the subsequent 15 years. 
+
+```{r Code_8}
+Q4CP = filter(Q4C, Year > 1899)
+
+min_gdp = min(Q4CP$log_GDPCapita)
+max_gdp = max(Q4CP$log_GDPCapita)
+Reg_3 = lm(log_GDPCapita ~ poly(yearnum,3), data = Q4C[Q4C$century == "20th", ])
+
+pred_df <- expand.grid(gdpPercap = (seq(from = min_gdp, to = max_gdp, length.out = 100)), yearnum = c(0:115))
+
+pred_out <- predict(object = Reg_3, newdata = pred_df, interval = "predict")
+
+pred_df <- cbind(pred_df, pred_out)
+
+p1 = ggplot(data = pred_df, aes(x = yearnum, y = fit, ymin = lwr, ymax = upr, fill ="Predicted Line", col = "Predicted")) + geom_line()
+p1 + geom_point(data = Q4CP, aes(x = yearnum, y = log_GDPCapita, col = "Given"), alpha = 0.5, inherit.aes = FALSE) + geom_ribbon(alpha = 0.2, color = FALSE) 
+
+```
+
+
+**Answer**
+While my forecast predicts a somewhat accurate trend in England's GDP, it misses to see the dip in the economy during the 2000s. My forecast correctly predicts increasing GDP, at an increasing rate, in England however, the main dip, which I already mentioend is missing. I am covering the time between 2000 to 2015 so a dip should have been witnessed, or a decrease in growth atleast.
+
+Please note, I kept the fill option seperate in order to make it better for visualization. It was a personal preference. 
