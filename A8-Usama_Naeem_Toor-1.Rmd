@@ -1,0 +1,189 @@
+---
+title: "A8-*Usama Naeem Toor*"
+author: "by *Usama Naeem Toor* (*301353233*)"
+date: '*13/11/2020*'
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+---
+
+### Assignment 8 Instructions
+
+1. Read [Sections 6.5 and 6.6 in Chapter 6](https://socviz.co/modeling.html#generate-predictions-to-graph) of SOCVIZ.
+
+2. Read [CH 7](https://r4ds.had.co.nz/exploratory-data-analysis.html), [CH 15](https://r4ds.had.co.nz/factors.html), [CH 19](https://r4ds.had.co.nz/functions.html) and [CH 21](https://r4ds.had.co.nz/iteration.html) in R4DS.
+
+2. Download the markdown file "A8-Your Name.Rmd" from Canvas. Change the name of the file so that your full name appears in the name of the file instead of the words "Your Name". Change the title and author information at the top to reflect your information.  **Independently** complete the steps in each section below, then *knit* your R Markdown Notebook into a ``.html`` file. Submit the completed ``.Rmd`` and ``.html`` file on Canvas. Submit the same ``.html`` file to the course Turnitin link. **Assignment 8 is due by 11:59PM on Sunday November 15. Assignments submitted late will lose one point per 10 minutes late. So 1 point will be deducted if submitted between 12:00-12:09 AM; -2 points 12:10-12:19 AM; ...; -9 points 1:20-1:29 (since assignments are out of 10, no credit for anything after 1:30)** 
+
+### Part 1: Integrity Statement and Assignment References
+
+In submitting this assignment to Canvas, I, **Usama Naeem Toor**, confirm that this work was independently completed and that I have appropriately listed all of my sources below. I understand that if any part of my answers (inlcluding the code I use) are similar enough to indicate non-independent work when compared to the answers from any other student in this course or from prior course materials, then I will receive zero points on this assignment. I also affirm that any answers or code copied or used from other resources online is appropriately referenced and if it is not appropriately referenced than I will receive zero points on this assignment. 
+
+I have used the following materials to complete this assignment: 
+1. [R4DS](https://r4ds.had.co.nz). 
+2. [SOCVIZ](https://socviz.co)
+3. Course lecture videos on Canvas
+4. **https://www.datanovia.com/en/blog/ggplot-legend-title-position-and-labels/**
+
+NEW: I have used the following R packages to complete this assignment. To replicate, install these packages first.
+1.`tidyverse`
+2. `gssr`
+3. `broom`
+
+
+### Part 2 
+
+For this assignment, you will be working with a subset of the General Social Survey (GSS) data created for the SOCVIZ book. You will need to install the `socviz` package which you can do by typing `devtools::install_github("kjhealy/socviz")` into your console.   
+
+```{r setup, message = FALSE}
+library(tidyverse)
+library(socviz)
+library(broom)
+data(gss_sm)
+
+```
+
+
+1. Create a modified data object from the `gss_sm` dataset that is part of the `gssr` package (make sure to load the `gssr` library) according to the following features:
+
+    a) keep the following variables/columns: age, childs (number of children), degree, race, sex, region, income16, polviews, happy, zodiac, obama
+    b) keep observations only if the `obama` variable is non-missing so that your data represents individuals who voted in the 2012 election.
+    
+Show the structue of your data using `str()
+`. Which of the columns are "Factor" format? Comment on what a "factor" variable is.    
+
+```{r Code_1, message = FALSE, warning = FALSE}
+
+dataset_1 = gss_sm %>% select("age", "childs","degree","race","sex","region","income16","polviews","happy","zodiac","obama") %>% filter(obama != "NA")
+
+
+```
+
+
+2. Create a numeric variable for income that is equal to the midpoint  of the category represented for each value of `income16`. For example, for the category "\$10000 to 12499" your new income variable would be equal to 11250; for the category "\$17500 to 19999" your new variable would be equal to 18750 for the category "\$130000 to \$149999", your new variable would be equal to 140000. For the topcoded category, "\$170000 or over" use 200000. I show on the lecture video how you might approach this using `case_when()`. Also create an indicator variable equal to 1 if female and 0 if male. 
+
+```{r Code_2, message = FALSE, warning = FALSE}
+dataset_1 = dataset_1 %>% mutate(sexNV = case_when(sex == "Female" ~ 1,
+                                                   sex == "Male" ~ 0)) %>% 
+mutate(incomeNV = case_when(income16 == "under $1 000" ~ 500,
+                           income16 == "$1 000 to 2 999" ~ 2000,
+                           income16 == "$3 000 to 3 999" ~ 3500,
+                           income16 == "$4 000 to 4 999" ~ 4500,
+                           income16 == "$5 000 to 5 999" ~ 5500,
+                           income16 == "$6 000 to 6 999" ~ 6500,
+                           income16 == "$7 000 to 7 999" ~ 7500,
+                           income16 == "$8 000 to 9 999" ~ 9000,
+                           income16 == "$10000 to 12499" ~ 11250,
+                           income16 == "$12500 to 14999" ~ 13750,
+                           income16 == "$15000 to 17499" ~ 16250,
+                           income16 == "$17500 to 19999" ~ 18750,
+                           income16 == "$20000 to 22499" ~ 21250,
+                           income16 == "$22500 to 24999" ~ 23750,
+                           income16 == "$25000 to 29999" ~ 27500,
+                           income16 == "$30000 to 34999" ~ 32500,
+                           income16 == "$35000 to 39999" ~ 37500,
+                           income16 == "$40000 to 49999" ~ 42500,
+                           income16 == "$50000 to 59999" ~ 55000,
+                           income16 == "$60000 to 74999" ~ 67500,
+                           income16 == "$75000 to $89999" ~ 82500,
+                           income16 == "$90000 to $109999" ~ 100000,
+                           income16 == "$110000 to $129999" ~ 120000,
+                           income16 == "$130000 to $149999" ~ 140000,
+                           income16 == "$150000 to $169999" ~ 160000,
+                           income16 == "$150000 to $169999" ~ 180000
+                            ))
+
+```
+
+
+3. Create a "box-and-whisker" plot (`geom_boxplot`) that allows you to compare income across the group who voted for Obama (`obama==1`) and the group that voted for Romney (`obama==0`) in the 2012 election. Make the graph as clear as possible with titles, labels, etc. Write a brief comment on what is depicted by a box-and-whisker plot (can find a discussion of a boxplot in CH7 of R4DS) and what you learn about how income varies between Romney and Obama voters. 
+
+```{r Code_3, warning = FALSE}
+dataset_1 %>% ggplot(aes(x = obama, y = incomeNV, group = obama)) + geom_boxplot(width=0.5,lwd=0.5) + coord_flip() + labs( x= "Vote, 0 for Romney, 1 for Obama", y = "Income Groups", title = "Comparing Income of Voters for Obama and Romney") + theme(plot.title = element_text(hjust=0.5))
+```
+
+**Answer**
+To explain the Boxplot, first we start by the line. The line or whisker stretches from the furthest non-outliner point in distribution in each direction. Then we move towards the box, the middle line in the box represents the 50th percentile of the mean, the upper line represents the 75th and the lower 25th. The 75th percentile means that 75% percentage of the values are below it, and 25th percentile means 25% of the values are below it. In the case of our diagram, we recognize that that Obama's supporters are, on average, less wealthier than Romney, creditted to the point that the mean is lower in Obama's case. Secondly, the 25th and 75th percentile are higher in Romney's group which suggests that most of them are wealthier, having there lowest percentile better, so there income group is much better than Obama's. Lastly, we should recognize that even though Obama's group is not the wealthier one, it still has member who match the wealth held by Romney, meaning Obama has millionares as well.
+
+
+
+4. Using another visualization technique from [R4DS CH 7.5](https://r4ds.had.co.nz/exploratory-data-analysis.html) to understand covariation, compare any of the other variables in your data across Obama vs. Romney voters. Do not use the `geom_boxplot()` - be creative and try some of the other teqniques. **No two students should have the same or similar answers for this questions. While you are being creative - make sure to go sign the integrity statment at the top :) ** 
+
+```{r Code_4, warning = FALSE}
+dataset_1 %>% ggplot(aes(x = factor(polviews), fill = factor(obama))) + geom_bar(position = position_dodge(width = 1)) + coord_flip() + labs( x= "Political Views of Supporters", y = "Count", title = "Political Views associated with Vote", fill = "Voters") + theme(plot.title = element_text(hjust=0.5)) + scale_fill_discrete(labels = c("Romney","Obama"))
+```
+
+
+5. Estimate a linear regression model using the `lm` function where the dependent variable is the indicator variable for whether an indivdual voted for Obama in 2012 (`obama`) and the following variables are the independent regressor variables: `age, childs, degree, race,` and the female indicator variable and income variable you created in Q2. Display your regression output. Since your dependent variable is either zero or one, your coefficients can be interpreted as a change in the probability of voting for Obama associated with a one-unit change in your regressor. So if you have a coefficient equal to 0.05 this means that a one unit increase in your regressor is associated with a 5 percentage point increase in the probability an individual voted for Obama. What is the increase in the probability of voting for Obama with a 10,000 increase in income in this model? How does this compare to your visualization in Q3? 
+
+```{r Code_5, warning = FALSE}
+Reg_1 = lm(obama ~ age + childs + degree + race + sexNV + incomeNV, data = dataset_1)
+summary(Reg_1)
+```
+
+**Answer**
+First of all, we need to recognize that the relationship between the Obama variable ( 0 or 1) is inversly related to income, which means that an increase in income would result in decrease in chances for voting for Obama. A point increase in income will result in 1.173e-06 decrease in chances of vote for Obama. So, if we increase income by 10,000 we reach the value -0.01173 meaning that the chances of Obama not getting a vote, or obama variable being 0 increases. Hence, an increase is bad for Obama. This thesis is supported by the boxplot model in Q3 where an increase in income is supported with the fact that people swtich vote from Obama to Romney, hence the regression and boxplot are coherent with each other. Where income is higher, people are within the Romney group, not the Obama one. 
+
+
+6. Follow the example in [Section 6.5.1 of SOCVIZ](https://socviz.co/modeling.html#tidy-model-objects-with-broom) and plot the estimates for the education, race, and female regressors similar to Figure 6.6 with estimates and their associated confidence intervals. Note how the `lm()` function treats factor variables (I will talk about this in the lecture video) and keep all the regressors related to education, race and female to plot. You will have to filter your tidy dataset of results to select just the coefficients of interest. Comment on which education group had the highest probability of voting for Obama holding all the other variables constant. Can you say with confidence that this difference is not zero? Explain why or why not.  
+
+```{r Code_6, warning = FALSE}
+Reg_2_tidy = tidy(Reg_1, conf.int = TRUE)
+Reg_2_tidy = Reg_2_tidy %>% filter(str_detect(term, "degree"))
+Reg_2_tidy %>% ggplot(aes(x = term, y = estimate, ymin=conf.low, ymax=conf.high)) + geom_pointrange() + coord_flip() + geom_hline(yintercept = 0, linetype = "dashed", color = "red") + labs( x= "Education of Supporters", y = "Estimates", title = "Education associated with Vote") + theme(plot.title = element_text(hjust=0.5)) 
+
+```
+
+**Answer**
+Among the education groups in front of me, Graduates have the highest chance of voting for Obama, followed by Bachelors, High School and Junior College. In this data set, we can say that relevent to Lt Hight School, holding all other variables constant, High School and Junior College are less likely to vote for Obama with confidence, as all of the confidence interval is in negative estimate. While Bachelors are to follow the same trend, we can not say that with full confidence. Alternatively, in the case of Graduate, they are more likely to vote for Obama but that too is not will full confidence, as some of the estimate lies in the negative region. I can say with confidence that no variable has a difference equal to zero. 
+
+
+7. We are now going to work on communicating results of how the association between gender and voting for Obama varies across the different regions in the US. Our goal will be a figure that looks similar to [Figure 6.9 in SOCVIZ](https://socviz.co/modeling.html#tidy-model-objects-with-broom) where region is on the horizontal axis but we will not have seperate groups (colors). We will only have one estimate for each region. Try to follow the example in 6.6 (also will discuss an example in lectture videos). Use the same dependent and independent variables as in Q5 for your `lm()` model. Describe your plot. What do the estimated coefficients measure? For which region is the difference between females and males in terms of voting for Obama the greatest? In which region is the difference the smallest?    
+
+```{r Code_7 , warning = FALSE}
+Reg_function = function(df) {
+  lm(obama ~ age + childs + degree + race + sexNV + incomeNV, data = df)
+}
+
+Code_7 = dataset_1 %>% group_by(region) %>% nest() %>% mutate(model = map(data, Reg_function), tidy_dat = map(model, tidy)) %>% unnest(tidy_dat, .drop = TRUE) %>% filter(term == "sexNV")
+
+Code_7 %>% ggplot(aes(x = region, y = estimate, ymin = estimate - 2*std.error,   ymax = estimate + 2*std.error)) + geom_pointrange() + coord_flip() + labs(x = "Regions", title = "Gender vote by Region") + theme(plot.title = element_text(hjust=0.5)) 
+
+
+```
+
+**Answer**
+What we observe here is that in each region, for an increase in woman, vote for obama decrease or increases. In New England, Middle Atlantic, E. Nor Central, W. Nor Central, South Atlantic, W. Sou Central, Mountain and Pacific, an increase in woman will lead to an increase in vote for Obama. Whereas in E. South Central, that would not be the case, though this can not be said with full confidence. We have full condidence only in Middle Atlantic, hence the region which is most likely to vote for Obama, where as we have the lowest probability for vote for Obama in E. Sou Central. The difference is greatest in New England, while the difference is smallest in South Atlantic. 
+
+
+
+8. Get your creative juices flowing! Go back to your dataset from Q1 or to the original `gss_sm` object and look through the types of variable captured. Propose your own analysis. Describe a linear model that you will estimate and why you think the model is interesting. What is your dependent variable (do not use the obama variable as the dependent variable)? What are your independent regressors? Choose one of the independent regressors as your **race** (something other than gender as we did above) and create a visualization helping to depict the covariation between this variable and your dependent variable (boxplot? scatterplot?). Use [Section 7.5 of R4DS](https://r4ds.had.co.nz/exploratory-data-analysis.html) for inspiration. Estimate your model using the full GSS sample and interpret the coefficient for your key regressor of interest. Then propose investigating how this relationship varies across different subsamples (don't use region like we did above) and create a visualization displaying the estimate across different groups similar to what we did in the previous question. Be creative! Be original! Your idea should not overlap with anyone in the class. 
+
+
+```{r Code_8, warning = FALSE, fig.width = 10, fig.height = 6}
+dataset_1 %>% ggplot(aes(x = race, y = childs, group = race, fill = race)) + geom_boxplot(width=0.5,lwd=0.5) + coord_flip() + labs( x= "Races in our sample", y = "Number of Children to have", title = "Comparing Races in terms of Number of Children to have", fill = "Race type") + theme(plot.title = element_text(hjust=0.5)) 
+
+
+
+Reg_function1 = function(df) {
+  lm(childs ~ race + relig + region + income16, data = df)
+}
+
+Code_8 = gss_sm %>% group_by(polviews) %>% nest() %>% mutate(model = map(data, Reg_function1), tidy_dat = map(model, tidy)) %>% unnest(tidy_dat, .drop = TRUE) %>% filter(str_detect(term, 'race'))
+
+Code_8 %>% ggplot(aes(x = polviews, y = estimate, ymin = estimate - 2*std.error,   ymax = estimate + 2*std.error, col = term)) + geom_pointrange(position=position_dodge(width=0.5)) + coord_flip() + labs(x = "Political Views", title = "Children to have by Polviews", col = "Race") + theme(plot.title = element_text(hjust=0.5)) + geom_hline(yintercept = 0, linetype = "dashed", color = "red")
+
+
+
+``` 
+
+
+**Answer**
+In making my linear model, I pick childs or children as my DV whereas race, relig, region and incomeNV as my IV. My regressor of interest is race in order to measure which race forms the biggest family size. According to my thinking, people of race other than white will have chances of 3 or more children more than white people. Considering this initial thought, my visualizations prove another story. While all of the family has the mean number of 2 children, which was surprising, in others we have the number of children going to 4 in the 75th percentile, however, for all of the 25th percentile is 1 child as well. As for as polviews are concerned, in the case of Extremely Liberals and Liberals, we see that it means that being black has more chances of having more chidlren though it is close in the case of Extremely Liberals, whereas the same trend continues in Extremely Conservative, NA and Slightly Conservative where also the difference is small. While the opposite trend is true if polviews are Slightly Liberal, Moderate and Convservative with a close difference in Conservative and Slightly Liberal. We have full confidence in raceOthers and NA, raceBlack and Moderate and Liberal and raceOthers.
+
+
+**DON'T FORGET TO PUT YOUR NAME IN THE INTEGRITY STATEMENT IN PART 1 AND SUMBIT YOUR HTML FILE TO TURNITIN!**
+    
+    
+

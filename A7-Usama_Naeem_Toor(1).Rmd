@@ -1,0 +1,253 @@
+---
+title: "A7-*Usama Naeem Toor*"
+author: "by *Usama Naeem Toor* (*301353233*)"
+date: '*5th Nov 2020*'
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+---
+
+### Assignment 7 Instructions
+
+1. Read [Chapter 12](https://r4ds.had.co.nz/tidy-data.html), [Chapter 13](https://r4ds.had.co.nz/relational-data.html), and [Chapter 19](https://r4ds.had.co.nz/functions.html) of [**R for Data Science (R4DS)**](https://r4ds.had.co.nz).
+
+2. Download the markdown file "A7-Your Name.Rmd" from Canvas. Change the name of the file so that your full name appears in the name of the file instead of the words "Your Name". Change the title and author information at the top to reflect your information.  **Independently** complete the steps in each section below, then *knit* your R Markdown Notebook into a ``.html`` file. Submit the completed ``.Rmd`` and ``.html`` file on Canvas. Submit the same ``.html`` file to the course Turnitin link. **Assignment 7 is due by 11:59PM on Sunday November 8. Assignments submitted late will lose one point per 10 minutes late. So 1 point will be deducted if submitted between 12:00-12:09 AM; -2 points 12:10-12:19 AM; ...; -9 points 1:20-1:29 (since assignments are out of 10, no credit for anything after 1:30)** 
+
+### Part 1: Integrity Statement and Assignment References
+
+In submitting this assignment to Canvas, I, **Usama Naeem Toor**, confirm that this work was independently completed and that I have appropriately listed all of my sources below. I understand that if any part of my answers (inlcluding the code I use) are similar enough to indicate non-independent work when compared to the answers from any other student in this course or from prior course materials, then I will receive zero points on this assignment. I also affirm that any answers or code copied or used from other resources online is appropriately referenced and if it is not appropriately referenced than I will receive zero points on this assignment. 
+
+I have used the following materials to complete this assignment: 
+1. [R4DS](https://r4ds.had.co.nz). 
+2. [SOCVIZ](https://socviz.co)
+3. Course lecture videos on Canvas
+4. http://www.sthda.com/english/articles/40-regression-analysis/162-nonlinear-regression-essentials-in-r-polynomial-and-spline-regression-models/
+
+NEW: I have used the following R packages to complete this assignment. To replicate, install these packages first.
+1.`tidyverse`
+2. `lubridate`
+3. `modelr`
+
+
+### Part 2 - Data import, manipulation, modelling and visualization
+
+```{r setup, message = FALSE}
+library(tidyverse)
+library(lubridate)
+library(modelr)
+```
+
+**Throughout this assignment, I'd like for you to suppress the warning messages or information that you think is unnecessary that prints under your code chunks when you knit the file. You want the results, but not the warnings / data input messages etc. Treat your answers like a report to a supervisor that wants to see the code and results but not all the messy messages. Use the appropriate R code chunk options discussed in [Section 27.4.2 of R4DS](https://r4ds.had.co.nz/r-markdown.html)**
+
+1. Download the file "lotto_scratch_data.csv" from Canvas and import as a data object. This dataset captures daily sales of "scratch-and-win"" lottery tickets in Vancouver from January 1, 2005 through December 31, 2019. The variables are as follows: 
+
+    - *month, day, year*: self explanatory
+    - *lotto_scratch_sales_total*: total sales of scratch lottery tickets on day
+    - *lotto_scratch_sales_1*: total sales of $1 scratch lottery tickets on day
+    - *lotto_scratch_sales_2*: total sales of $2 scratch lottery tickets on day
+    - ...
+    - *lotto_scratch_sales_20*: total sales of $20 scratch lottery tickets on day. 
+    
+    Note that the total sales does not equal the sum of all the individual values as there are other values for tickets (e.g. $7, $25) that are not split out as seperate variables. 
+    
+```{r Code_1, message = FALSE}
+MainDS = read_csv("lotto_scratch_data.csv")
+head(MainDS)
+```
+    
+
+2. Use the appropriate functions from the `lubridate` package to make a date-formated variable with the values of month, day, and year and to create a day-of-week variable. Using `group_by` and `summarize()` functions, plot the natural log of average daily scratch lotto ticket sales per year and comment on the pattern observed.  Make your plots look as good as possible with axis labels, titles, etc. 
+
+```{r Code_2, message = FALSE}
+P2 = MainDS %>% mutate(Date = make_date(year, month, day), DayName = wday(Date, label = TRUE))
+P2
+
+P2 %>% group_by(year) %>% summarise(YearlySales = log(mean(lotto_scratch_sales_total))) %>% ggplot(aes(x = year, y = YearlySales)) + geom_line(color = "Red") + labs(x="Years", y= "Sales Statistics", title="(Log) Mean Lottery ticket Sales per year") +  theme(plot.title = element_text(hjust=0.5))
+
+
+
+```
+
+
+**Answer**
+Between 2005 to 2010, loterry tickets sales saw a huge decline with a huge dip coming between 2009 to 2010. However, since then, sales of tickets have increased, with minor decreases in between, and the growth has continued since. However, near 2019, a small dip is observed which is bound to be overcome, considering previous trends. 
+
+
+3. Create a data set using `group_by` and `summarize` that captures average daily ticket sales for each ticket type ($1, $2,..., $20). Then use the appropriate pivot function discussed in [Section 12.3 of R4DS](https://r4ds.had.co.nz/tidy-data.html) to create a data set that has a variable for average daily sales and a variable for the value of the ticket (ignore the total sales category). Create a plot that shows the average daily sales (not the log variable) of tickets by year for each of the ticket values. Try to make the legend  of your graph have a reasonable order so that it is increasing values of the tickets (e.g. the first element is $1, second is $2, and last is $20). As always, make your graph as clear and clean as possible. Comment on whether certain types of tickets dominate total sales and/or drive the overall trends observed in your first plot.
+
+```{r Code_3}
+P3 = MainDS %>% group_by(year) %>% summarise_at(c("lotto_scratch_sales_1", "lotto_scratch_sales_2", "lotto_scratch_sales_5", "lotto_scratch_sales_10", "lotto_scratch_sales_20"), mean, na.rm = TRUE) %>% pivot_longer(c("lotto_scratch_sales_1", "lotto_scratch_sales_2", "lotto_scratch_sales_5", "lotto_scratch_sales_10", "lotto_scratch_sales_20"), names_to = "TYPE", values_to = "AvgNum")
+
+P3
+
+P3$TYPE <- factor(P3$TYPE, levels = c("lotto_scratch_sales_1", "lotto_scratch_sales_2", "lotto_scratch_sales_5", "lotto_scratch_sales_10", "lotto_scratch_sales_20"))
+
+P3 %>% ggplot(aes(x = year, y = AvgNum, color = TYPE)) + geom_line() + labs(x="Years", y= "Average Sales", title="Average Sales per year by Ticket Type", color = "Lottery Type") +  theme(plot.title = element_text(hjust=0.5))
+
+```
+
+**Answer**
+Amongst the tickets, 5 dollar ticket consistantly has the most sales, dominating the sales overall. On the other hand, both 2 dollar and 1 dollar tickets have sales consistantly low, seeing a decrease since 2012. Surprisingly, it is 10 dollar and 20 dollar tickets that gain alot of attention since 2008 and consistantly picking up the overall ticket sale. 
+
+
+4. Download the file "BCholidays.csv" from Canvas, read into R, create a date variable using the appropriate function, and then join this holiday data to your lotto data using the appropriate function discussed in  [Chapter 13](https://r4ds.had.co.nz/relational-data.html) of R4DS. Create an indicator variable named `holiday` that is equal to one if the day is a BC holiday and zero if not. *Note that the holiday data starts in 2003, but you only want to keep the holidays that match a date in your lotto data.*
+
+```{r Code_4, message = FALSE}
+P4 = read_csv("BCholidays.csv")
+
+P4 = P4 %>% filter(YEAR > 2004) %>% mutate(Date = make_date(YEAR, MONTH, DAY), DayName = wday(Date, label = TRUE)) %>% full_join(P2) %>% mutate(Holiday = ifelse(is.na(holiday),0,1))
+
+P4
+```
+
+
+5. Download the file "weather.csv" from Canvas and read into R. This file captures information about daily weather conditions in Vancouver from https://vancouver.weatherstats.ca. Please refer to this website for information about the variables captured. What is the date range of this data?  Join this data by date with your data from the previous question.  
+
+```{r Code_5, message = FALSE, warning = FALSE}
+P5 = read_csv("weather.csv")
+range(P5$date)
+summary(P5$date)
+P5 = P5 %>% rename(Date = date) %>% inner_join(P4, by = "Date")
+```
+
+**Answer**
+Fromm 1999 to 2020, with 2009 as the median and mean. 
+
+
+5. Create a scatter plot to help describe the relationship between the log of daily lotto scratch ticket total sales (y-axis) and the daily average temperature (x-axis) (`avg_temperature`). Overlay a linear line and summarize the results of the regression line corresponding to the line in your plot. Interpret the slope coefficient in the following way filling in the blank with the appropriate direction and value: **"A five degree increase in daily termperature is associated with a ______ of daily scratch lottery ticket sales"**. 
+
+```{r Code_6}
+P5 %>% ggplot(aes(x=avg_temperature, y = log(lotto_scratch_sales_total))) + geom_point() + geom_smooth(method = "lm", formula = y ~ x, se = FALSE) +  labs(x="Average Temperature", y= "Log of Total Sales", title="Log Sales per year") +  theme(plot.title = element_text(hjust=0.5))
+
+Reg_1 = lm(log(lotto_scratch_sales_total) ~ avg_temperature, data = P5)
+
+(Reg_1)
+
+```
+
+**Answer**
+"A five degree increase in daily termperature is associated with a 0.027364 *decrease* of daily scratch lottery ticket sales"
+
+
+
+6. As discussed in this week's lecture videos, one way to evaluate how well a model fits the data is to calculate the mean of the squared residuals (MSE) from the regression model and compare this across models. Add the residuals from your model in Q6 to your data along with residuals from a model including a quadratic in the average temperature regressor and a model including a cubic function of the average temperature regressor. *To do this, we will need to install the "modelr" package and load the library.* Calculate the average of the squared residuals from the three models and comment on which model best fits the data according to a criteria that we prefer the smallest value of the MSE. 
+
+```{r Code_7}
+Reg_2 = lm(log(lotto_scratch_sales_total) ~ poly(avg_temperature,2, raw = TRUE), data = P5)
+Reg_3 = lm(log(lotto_scratch_sales_total) ~ poly(avg_temperature,3, raw = TRUE), data = P5)
+
+P5 = P5 %>% add_residuals(Reg_1, var = "MSE_1") %>% add_residuals(Reg_2, var = "MSE_2") %>% add_residuals(Reg_3, var = "MSE_3")
+
+P5 %>% summarize(n1 = mean(MSE_1^2), n2 = mean(MSE_2^2), n3 = mean(MSE_3^2)) %>% signif(5)
+
+```
+
+
+**Answer**
+According to our calculations, the value that is the lowest is n3 or the value for cubic function with a value of 0.07516636. Since the value of n3 is the lowest, we can conclude that n3 or cubic is the most fit, according to the rules of MSE.  
+
+
+7. We have a lot of other varaibles in our dataset that could influence scratch lottery ticket sales. Run a model where you predict the log of daily scratch lottery ticket sales using the following as regressors (variables on the right hand side of your model): 
+
+    - avg_temperature
+    - holiday
+    - precipitation
+    - a quadratic in year ($year$ and $year^2$)
+    - indicator variables for each month (*see lecture videos for including "factor" variables in regression and a discussion of indicator variables*)
+    - indicator variables for each day of week. 
+
+    How does the MSE compare from this model to your models from the previous question? If you wanted to predict the sales of scratch lotto tickets tomorrow, which model would you use? From the model results, which day of the week do you expect the highest sales controlling for the other variables (month, holiday, average temperature, rain)? Which month do you expect the highest sales? How does the correlation between temperature and sales compare once you control for all these other factors? What does this change suggest about what was driving the negative correlation in earlier questions? 
+    
+```{r Code_8, message = FALSE, warning = FALSE}
+P5 = P5 %>% mutate(month=month(Date)) %>% mutate(jan=ifelse(month==1,1,0),
+feb=ifelse(month==2,1,0),
+march=ifelse(month==3,1,0),
+april=ifelse(month==4,1,0),
+may=ifelse(month==5,1,0),
+june=ifelse(month==6,1,0),
+july=ifelse(month==7,1,0),
+aug=ifelse(month==8,1,0),
+sept=ifelse(month==9,1,0),
+oct=ifelse(month==10,1,0),
+nov=ifelse(month==11,1,0),
+dec=ifelse(month==12,1,0),)
+
+P5 = P5 %>% mutate(day=day(Date)) %>% mutate(mon=ifelse(day==2,1,0),
+tues=ifelse(day==3,1,0),
+wed=ifelse(day==4,1,0),
+thurs=ifelse(day==5,1,0),
+fri=ifelse(day==6,1,0),
+sat=ifelse(day==7,1,0),
+sun=ifelse(day==1,1,0),)
+
+Reg_4 = lm(log(lotto_scratch_sales_total) ~ avg_temperature + precipitation + poly(year,2, raw=TRUE) + tues + wed + thurs + fri + sat + sun + feb + march + april + may + june + july + aug + sept + oct + nov + dec + Holiday, data = P5, na.action=na.omit)
+
+summary(Reg_4)
+
+P5 = P5 %>% add_residuals(Reg_4, var = "MSE_4")
+
+P5 %>% summarise(n4=mean(MSE_4^2))
+```
+    
+**Answer**
+By adding a new variable, we are able to lower the value of MSE and make it a better fit. We will definately prefer this model over the former ones. The most profitable day would be Tuesday with an increase of 2.579e-03. As far as months are concerned, december will be the most profitable as it will only see an increase of 8.258e-02. After controlling for all variables, the relation or corelation between the two become position, as compared to negative before. This is because before, we did not take in control other variables effecting sales hence our regression was off, so not taking in other variables was the main cause of negativity.
+
+
+
+8. Look through the variables included in the weather data and evaluate the influence of at least one of the variables (or a transformation of some of the variables) that you think could affect scratch lottery ticket sales. Alternatively, you can import another data set or think of another type of variable or event that could influence lotto tickets and evaluate that. It just must be a variable you have a daily measure for or can create. Please be creative! There are lots of potential interesting questions you could look at.
+
+    a) First, write a brief paragraph motivating why you chose to investigate the variable that you choose. What is your hypothesis as to how it will relate to scratch lotto ticket sales? 
+    
+**Answer**
+The variable I chose was avg_relative_humadity or average humidity. The reason why I chose this variable was to understand how much effort an individual is willing to make in order to get a lottery ticket, and in what season is the same effort most, corresponding to the humidity levels. According to my predicion, an increase in humidity will almost always result in more sale as people, espacially in this geographic area, would love to go out, while in less humid environment it would be less. 
+
+    b) Visualize your varaible over the 2005 through 2019 time horizon. Comment on any interesting patterns. 
+    
+```{r Code_9, message = FALSE, warning = FALSE}
+P5 %>% group_by(year) %>% summarise(Humid_1 = mean(avg_relative_humidity)) %>% ggplot(aes(x=year, y = (Humid_1))) + geom_line(col = "Blue") + labs(x="Years", y= "Avg Humidity", title="Humidity over the Year") +  theme(plot.title = element_text(hjust=0.5))
+
+
+```
+
+**Answer**
+The time between humid and less humid enviornment looks as if its equally divided, however humidity is generally more across the years. After 2012, we only observe and increase and before 2006, we have had high levels of humidity as well. 
+    
+    c) Visualize the raw relationship between yoru variable and scratch lotto ticket sales through a scatter plot with a simple linear model similar to Q5. Comment on the correlation between the variable and lotto ticket sales and whether this correlation fits or doesn't fit your hypothesis. Estimate the model and show the coefficient estimate. Interpret the coefficient estimate - "A one unit increase in X is associated with... "
+    
+```{r Code_10, message = FALSE, warning = FALSE}
+P5 %>% ggplot(aes(x=avg_relative_humidity, y = log(lotto_scratch_sales_total), group_by(year))) + geom_point() + geom_smooth(method = "lm", formula = y ~ x, se = FALSE) + labs(x="Avg Humidity", y= "Log of Lottery Sale", title="Lottery Sale by Humidity") +  theme(plot.title = element_text(hjust=0.5))
+
+Reg_5 = lm(log(lotto_scratch_sales_total) ~ avg_relative_humidity, data = P5)
+summary(Reg_5)
+
+P5 = P5 %>% add_residuals(Reg_5, var = "MSE_5")
+P5 %>% summarise(n5=mean(MSE_5^2))
+
+```
+
+**Answer**
+The correlation between the two is positive, as humidity increase, lottery sale increases. This can be primarily attributed to the weather being good enough for people to go out and do more shopping, which might include tickets as well. 
+
+"A one degree increase in avg_relative_humidity is associated with a 0.0062448 *increase* of daily scratch lottery ticket sales"
+    
+    
+    d) Add your variable (or variables) to the model estimated in Q7. Show the results, interpret the coefficient on your variable of interest and comment on how it changes from the model in (c) where you do not include any other control variables. Comment again as to whether the relationship found here fits or doesn't fit with your hypothesis. Calculate the MSE and compare it to Q7. Does it appear that your variable (or variables) improve the predictive power of your model? 
+
+```{r Code_11}
+Reg_6 = lm(log(lotto_scratch_sales_total) ~ avg_temperature + precipitation + poly(year,2,raw=TRUE) + tues + wed + thurs + fri+ sat + sun + feb + march + april + may + june + july + aug + sept + oct + nov + dec + avg_relative_humidity + Holiday, data = P5)
+
+summary(Reg_6)
+
+P5 = P5 %>% add_residuals(Reg_6, var = "MSE_6")
+P5 %>% summarise(n6=mean(MSE_6^2))
+
+```
+   
+**Answer**
+The coefficient of interest becomes more positive in our second model, seeing an increase of nearly 2 points. The relationship here, between the two, fits here accordingly with my hypothesis of being positively related. In the second model, our MSE is lower than in the first one meaning the second one is more fit. We shall use the second one because it takes into account all other variables hence the ommitted variable effect is not found. As a result, in the second model we will have MORE predictive power. 
+
+**DON'T FORGET TO PUT YOUR NAME IN THE INTEGRITY STATEMENT IN PART 1 AND SUMBIT YOUR HTML FILE TO TURNITIN!**
+    
+    
+
